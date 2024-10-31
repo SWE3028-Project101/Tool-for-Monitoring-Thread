@@ -1,22 +1,26 @@
 import logo from './logo.svg';
 import './App.css';
+import {BrowserRouter, Route, Routes} from 'react-router-dom'
+import Main from './component/views/Main/Main'
+import MyThreads from './component/views/myThreads/myThreads'
+import Total from './component/views/total/total'
 
 function App() {
   return (
     <div className="App">
+      <BrowserRouter>
       
+      <Routes>
+        <Route path = "/" element = {<Main />}></Route>
+        <Route path = "/myThreads" element = {<MyThreads />}></Route>
+        <Route path = "/total" element = {<Total />}></Route>
         
-        <p>
-          이 화면에 첫 페이지 넣어주세요 아래 링크는 우리 쓰레드 보여줄 메인 페이지
-        </p>
-        <a
-          className="App-link"
-          href="./myThreads.html"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Go to see my threads!
-        </a>
+      </Routes>
+
+      
+      </BrowserRouter>
+        
+       
       
     </div>
   );

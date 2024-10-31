@@ -3,10 +3,8 @@ import React from 'react'
 function myThread() {
     return (
         <div>
-            myThread page
-            <a
-                href = "../total.html">
-            </a>
+            <p>myThread page</p>
+            <a href = "/total">total</a>
         </div>
        
     )
