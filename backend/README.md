@@ -1,13 +1,19 @@
 
 # backend
 - You can use our visualization api
-### Window
+- Please install Node.js
+- Node.js Installment Guide : [Node.js Homepage](https://nodejs.org)
+### Execution Code
 ```commandline
-sudo apt-get install npm
 npm run start
 ```
-### MacOS
-```commandline
-brew install npm
-npm run start
+### Request Body
+- uri: localhost:9000/api
+- Request body examples below
+```json
+{
+    "host": "localhost",
+    "port": "8080",
+    "threadPoolSize": 3
+}
 ```
