@@ -1,32 +1,25 @@
 import React from 'react';
 import './MyThreads.css';
 import ActiveThread from './ActiveThread';
-const datas = [
-    {
-    uri: "https://sample.com",
-    memoryUsage : "1000",
-    executionTime : "10ms" 
-    },
-    {
-        uri: "https://sample.com",
-        memoryUsage : "1000",
-        executionTime : "10ms" 
-    }
-];
-function MyThread() {
 
-   
+function MyThread({data}) {
+
+    console.log(data);
     return (
-    <div>
-        {datas.map((data,index)=> (
-            <ActiveThread
-            uri = {data.uri}
-            memoryUsage = {data.memoryUsage}
-            executionTime = {data.executionTime}
-        />
-        ))}
-        
-    </div>
+        <div>
+            {data && data.length > 0 ? (
+                data.map((item, index) => (
+                    <ActiveThread
+                        key={index}
+                        uri={item.uri}
+                        memoryUsage={item.memoryUsage}
+                        executingTime={item.executingTime}
+                    />
+                ))
+            ) : (
+                <p>No data available</p>
+            )}
+        </div>
     );
    
 }
