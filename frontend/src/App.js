@@ -26,7 +26,7 @@ function App() {
 
     // 5초마다 callApi 실행
     const intervalId = setInterval(() => {
-      console.log("hi");
+      console.log("fetching data from backend...");
       callApi();
     }, 5000);
 

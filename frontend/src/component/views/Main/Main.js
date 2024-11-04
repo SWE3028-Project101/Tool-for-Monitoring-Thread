@@ -2,15 +2,30 @@ import  React from 'react'
 import  { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Main.css';
+import axios from 'axios';
 
 function Main() {
-  const navigate = useNavigate();
-  const navigateToThreadPage = () => {
-    navigate("/MyThreads");
-  };
   const [Host, setHost] = useState("");
   const [Port, setPort] = useState("");
   const [TotalThreadCount, setTotalThreadCount] = useState("");
+  const navigate = useNavigate();
+  const handleSubmit = async () => {
+    const url = "/test-post";
+    const data = {
+      host: Host,
+      port : Port,
+      totalThreadCount : TotalThreadCount
+    };
+    try{
+      const response = await axios.post(url,data);
+      console.log('Response: ', response.data);
+      navigate("/MyThreads");
+    } catch (error){
+      console.error('Error: ',error.response ? error.response.data : error.message);
+    }
+    
+  };
+  
     return (
         <div className = "container">
         <p className="title">
@@ -24,9 +39,9 @@ function Main() {
               type = "text"
               value = {Host}
               onChange = {(e) => {
-                console.log(e);
+                console.log(e.target.value);
                 setHost(e.target.value);
-                
+                console.log("host is set to : ", Host);
               }} />
             </div>
         <br></br>
@@ -58,7 +73,7 @@ function Main() {
               }} />
           </div>
         <br></br>
-          <button className="button" size = "large" onClick = {navigateToThreadPage}>
+          <button className="button" size = "large" onClick = {handleSubmit}>
             see your threads!
           </button>
        </div>
