@@ -1,21 +1,31 @@
 import React, { useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import './Ranking.css';
 
 function Ranking({ data }) {
-  const [sortCriteria, setSortCriteria] = useState('callCount'); // 기본 정렬 기준을 'callCount'로 설정
-  const [memoryType, setMemoryType] = useState('average'); // Call Count 탭의 기준 (average 또는 max)
-  const [selectedDate, setSelectedDate] = useState(new Date()); // 선택한 날짜
-  const [selectedTime, setSelectedTime] = useState("00:00"); // 선택한 시간
+  const [sortCriteria, setSortCriteria] = useState('callCount');
+  const [memoryType, setMemoryType] = useState('average');
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedHour, setSelectedHour] = useState("00");
+  const [showData, setShowData] = useState(false);
+
+  // yymmdd_hh 형식으로 변환하는 함수
+  const formatDateTime = (date, hour) => {
+    const year = date.getFullYear().toString().slice(-2);
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}${month}${day}_${hour}`;
+  };
 
   // 데이터를 필터링하는 함수
   const filteredData = data.filter(item => {
-    if (sortCriteria === 'callCount') return true; // callCount 탭에서는 필터링하지 않음
+    if (sortCriteria === 'callCount') return true;
 
-    const itemDate = new Date(item.timestamp); // item.timestamp는 데이터의 타임스탬프라고 가정
+    const itemDate = new Date(item.timestamp);
     const startDate = new Date(selectedDate);
-    const [hours, minutes] = selectedTime.split(':');
-    startDate.setHours(hours, minutes);
-    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1시간 후
+    startDate.setHours(selectedHour);
+    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
 
     return itemDate >= startDate && itemDate < endDate;
   });
@@ -29,6 +39,13 @@ function Ranking({ data }) {
     }
   });
 
+  // 상위 10개 항목만 표시
+  const topTenData = sortedData.slice(0, 10);
+
+  const handleSelect = () => {
+    setShowData(true);
+  };
+
   return (
     <div className="ranking-container">
       <div className="ranking-tabs">
@@ -36,7 +53,8 @@ function Ranking({ data }) {
           className={`ranking-tab ${sortCriteria === 'callCount' ? 'active' : ''}`}
           onClick={() => {
             setSortCriteria('callCount');
-            setMemoryType('average'); // Call Count 탭을 선택할 때 기본값으로 average 설정
+            setMemoryType('average');
+            setShowData(false);
           }}
         >
           Call Count Ranking
@@ -45,47 +63,50 @@ function Ranking({ data }) {
           className={`ranking-tab ${sortCriteria === 'memoryUsage' ? 'active' : ''}`}
           onClick={() => {
             setSortCriteria('memoryUsage');
-            setMemoryType('average'); // Memory 탭을 선택할 때 기본값으로 average 설정
+            setMemoryType('average');
+            setShowData(false);
           }}
         >
           Memory Usage Ranking
         </button>
       </div>
 
-      {/* Call Count 탭에서는 선택기 숨기기 */}
       {sortCriteria === 'memoryUsage' && (
         <div className="date-picker">
           <label>Select Date:</label>
-          <input
-            type="date"
-            value={selectedDate.toISOString().substring(0, 10)} // YYYY-MM-DD 형식으로 날짜 표시
-            onChange={(e) => setSelectedDate(new Date(e.target.value))}
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => setSelectedDate(date)}
+            dateFormat="yyyy-MM-dd"
+            showTimeSelect={false}
           />
-          <label>Select Time:</label>
-          <select value={selectedTime} onChange={(e) => setSelectedTime(e.target.value)}>
-            {/* 0시부터 23시까지 시간 옵션 생성 */}
+          <label>Select Hour:</label>
+          <select value={selectedHour} onChange={(e) => setSelectedHour(e.target.value)}>
             {[...Array(24)].map((_, index) => {
               const hour = index < 10 ? `0${index}` : index;
               return (
-                <option key={index} value={`${hour}:00`}>{hour}:00</option> // 정각만 선택
+                <option key={index} value={hour}>{hour}</option>
               );
             })}
           </select>
+          <button onClick={handleSelect}>Select</button>
+          <p>Selected Date and Time: {formatDateTime(selectedDate, selectedHour)}</p>
         </div>
       )}
 
-      {/* 정렬된 데이터 표시 */}
-      <div className="ranking-list">
-        {sortedData.map((item, index) => (
-          <div key={index} className="ranking-item">
-            {sortCriteria === 'callCount' ? (
-              <p>{`${index + 1}. ${item.uri} - call count: ${memoryType === 'average' ? item.averageCallCount : item.maxCallCount}`}</p>
-            ) : (
-              <p>{`${index + 1}. ${item.uri} - memory usage: ${item.memoryUsage}MB`}</p>
-            )}
-          </div>
-        ))}
-      </div>
+      {showData && (
+        <div className="ranking-list">
+          {topTenData.map((item, index) => (
+            <div key={index} className="ranking-item">
+              {sortCriteria === 'callCount' ? (
+                <p>{`${index + 1}. ${item.uri} - call count: ${memoryType === 'average' ? item.averageCallCount : item.maxCallCount}`}</p>
+              ) : (
+                <p>{`${index + 1}. ${item.uri} - memory usage: ${item.memoryUsage}MB`}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
