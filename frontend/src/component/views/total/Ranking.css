@@ -1,0 +1,79 @@
+.ranking-container {
+  margin: 20px;
+  background-color: #b0f4e6; /* 배경 색상 */
+  padding: 20px;
+  border-radius: 8px; /* 모서리 둥글게 */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+}
+
+.ranking-tabs {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.ranking-tab {
+  padding: 10px 20px;
+  margin-right: 10px;
+  cursor: pointer;
+  background-color: #e0e0e0; /* 기본 배경 색상 */
+  border: none;
+  border-radius: 4px; /* 모서리 둥글게 */
+  transition: background-color 0.3s ease; /* 호버 효과 부드럽게 */
+}
+
+.ranking-tab:hover {
+  background-color: #d0d0d0; /* 호버 시 색상 변화 */
+}
+
+.ranking-tab.active {
+  background-color: #007bff; /* 활성화된 탭 색상 */
+  color: white;
+}
+
+.memory-tabs {
+  display: flex;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.memory-tab {
+  padding: 10px 20px;
+  margin-right: 10px;
+  cursor: pointer;
+  background-color: #e0e0e0; /* 기본 배경 색상 */
+  border: none;
+  border-radius: 4px; /* 모서리 둥글게 */
+  transition: background-color 0.3s ease; /* 호버 효과 부드럽게 */
+}
+
+.memory-tab:hover {
+  background-color: #d0d0d0; /* 호버 시 색상 변화 */
+}
+
+.memory-tab.active {
+  background-color: #007bff; /* 활성화된 메모리 탭 색상 */
+  color: white;
+}
+
+.date-picker {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.ranking-list, .memory-list {
+  margin-top: 10px;
+}
+
+.ranking-item, .memory-item {
+  background-color: #00c5a4; /* 항목 배경 색상 */
+  color: white;
+  padding: 10px;
+  border-radius: 8px; /* 모서리 둥글게 */
+  margin-bottom: 8px;
+  font-size: 16px;
+  transition: transform 0.2s; /* 마우스 오버 효과 */
+}
+
+.ranking-item:hover, .memory-item:hover {
+  transform: translateY(-2px); /* 항목 마우스 오버 시 살짝 위로 이동 */
+}
