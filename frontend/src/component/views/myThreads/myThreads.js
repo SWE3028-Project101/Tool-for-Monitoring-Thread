@@ -3,6 +3,12 @@ import './MyThreads.css';
 import ActiveThread from './ActiveThread';
 
 function MyThread({data}) {
+    const navigate = useNavigate();
+
+    const goToTotal =() => {
+        navigate("/total", {state: {data}});
+
+    }
 
     console.log(data);
     return (
