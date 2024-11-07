@@ -196,52 +196,48 @@ app.get('/api/rank', (req, res) => {
     });
 });
 
-//TODO
-// app.get('/api/state', (req, res) => {
-//
-//     const options = {
-//         uri: `http://${global.hostName}:${global.portNum}/actuator/metrics/custom.memory.usage`, // 프로토콜 추가
-//     };
-//
-//     request(options, function (err, response, body) {
-//         if (err) {
-//             console.error('Request error:', err);
-//             return res.status(500).send('Error fetching actuator data');
-//         }
-//
-//         // body가 비어 있는지 확인
-//         if (!body) {
-//             console.error('Empty response body');
-//             return res.status(500).send('Received empty response');
-//         }
-//
-//         let resBody;
-//         try {
-//             resBody = JSON.parse(body); // JSON 문자열을 객체로 변환
-//         } catch (parseError) {
-//             console.error('JSON parsing error:', parseError);
-//             return res.status(500).send('Error parsing JSON data');
-//         }
-//
-//         const transformedData = {
-//             data: resBody.availableTags[0].values.map((_, index) => {
-//                 const errorTag = resBody.availableTags.find(tag => tag.tag === "error");
-//
-//                 return {
-//                     uri: resBody.availableTags.find(tag => tag.tag === "uri")?.values[index],
-//                     memoryUsage: resBody.availableTags.find(tag => tag.tag === "memoryUsage")?.values[index],
-//                     executionTime: resBody.availableTags.find(tag => tag.tag === "executingTime")?.values[index],
-//                     time: resBody.availableTags.find(tag => tag.tag === "currentTime")?.values[index],
-//                     isError: errorTag && errorTag.values[index] && errorTag.values[index].includes("error") ? "true" : "false",
-//                     calledNum: resBody.availableTags.find(tag => tag.tag === "requestNum")?.values[index]
-//                 };
-//             })
-//         }
-//         let data = transformedData.data;
-//
-//         res.send(data);
-//     });
-// });
+app.get('/api/state', (req, res) => {
+
+    const options = {
+        uri: `http://${global.hostName}:${global.portNum}/actuator/threaddump`, // 프로토콜 추가
+    };
+
+    request(options, function (err, response, body) {
+        if (err) {
+            console.error('Request error:', err);
+            return res.status(500).send('Error fetching actuator data');
+        }
+
+        // body가 비어 있는지 확인
+        if (!body) {
+            console.error('Empty response body');
+            return res.status(500).send('Received empty response');
+        }
+
+        let resBody;
+        try {
+            resBody = JSON.parse(body); // JSON 문자열을 객체로 변환
+        } catch (parseError) {
+            console.error('JSON parsing error:', parseError);
+            return res.status(500).send('Error parsing JSON data');
+        }
+
+        const transformedData = resBody
+        let data = transformedData.threads;
+
+        const waitingThreadsCount = data.filter(thread => thread.threadState === "WAITING").length;
+        const runnableThreadsCount = data.filter(thread => thread.threadState === "RUNNABLE").length;
+        const timedWaitingThreadsCount = data.filter(thread => thread.threadState === "TIMED_WAITING").length;
+        const terminatedThreadsCount = data.filter(thread => thread.threadState === "TERMINATED").length;
+
+        res.send({
+            waitingCount: waitingThreadsCount,
+            runnableCount: runnableThreadsCount,
+            timedWaitingCount: timedWaitingThreadsCount,
+            terminatedCount: terminatedThreadsCount,
+        });
+    });
+});
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
