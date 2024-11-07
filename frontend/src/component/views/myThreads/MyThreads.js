@@ -52,6 +52,13 @@ function MyThreads({ data }) {
     }, category[0]);
   };
 
+  const slowestThread = (category) => {
+    if (!category || category.length === 0) return null;
+    return category.reduce((slowThread, currentThread) => {
+        return parseInt(currentThread.executionTime) > parseInt(slowThread.executionTime) ? currentThread : slowThread;
+    }, category[0]);
+  };
+
   const totalMemory = (category) => {
     if (!category || category.length === 0) return 0;
     return category.reduce((total, item) => {
@@ -79,7 +86,7 @@ function MyThreads({ data }) {
             category={selectedCategory}
             total={totalMemory(selectedCategoryData)}
             largest={largestMemory(selectedCategoryData)}
-            summaryData={selectedCategoryData[0]}
+            slowest={slowestThread(selectedCategoryData)}
             threadCount={selectedCategoryData.length}
           />
           <ThreadBubbles threads={selectedCategoryData} />
