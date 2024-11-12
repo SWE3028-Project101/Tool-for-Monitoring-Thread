@@ -13,17 +13,17 @@ function MyThreads({ data }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (data && data.data.length > 0) { // 문제 있으면 L16, 19, 26에 data.data.를 data.로 바꿔보기
+    if (data && data.length > 0) { // 문제 있으면 L16, 19, 26에 data.data.를 data.로 바꿔보기
       const extractedCategories = Array.from(
         new Set(
-          data.data.map(item => item.uri.split('/')[1])
+          data.map(item => a = item.uri.split('/')[1])
         )
       ).filter(Boolean);
       
       setCategories(extractedCategories);
 
       const groupedData = extractedCategories.reduce((acc, category) => {
-        acc[category] = data.data.filter(item => item.uri.startsWith(`/${category}`));
+        acc[category] = data.filter(item => item.uri.startsWith(`/${category}`));
         return acc;
       }, {});
       
