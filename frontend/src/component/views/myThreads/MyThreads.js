@@ -13,17 +13,22 @@ function MyThreads({ data }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (data && data.length > 0) { // 문제 있으면 L16, 19, 26에 data.data.를 data.로 바꿔보기
+    if (data && data.length > 0) {
       const extractedCategories = Array.from(
         new Set(
-          data.map(item => a = item.uri.split('/')[1])
+          data.map(item => {
+            const category = `/${item.uri.split('/')[1] || ''}`;
+            return category === '/' ? '/' : `/${item.uri.split('/')[1]}`;
+          })
         )
       ).filter(Boolean);
       
       setCategories(extractedCategories);
 
       const groupedData = extractedCategories.reduce((acc, category) => {
-        acc[category] = data.filter(item => item.uri.startsWith(`/${category}`));
+        acc[category] = data.filter(item => {
+          return category === '/' ? item.uri === '/' : item.uri.startsWith(category);
+        });
         return acc;
       }, {});
       
@@ -44,6 +49,13 @@ function MyThreads({ data }) {
     if (!category || category.length === 0) return null;
     return category.reduce((maxThread, currentThread) => {
         return parseInt(currentThread.memoryUsage) > parseInt(maxThread.memoryUsage) ? currentThread : maxThread;
+    }, category[0]);
+  };
+
+  const slowestThread = (category) => {
+    if (!category || category.length === 0) return null;
+    return category.reduce((slowThread, currentThread) => {
+        return parseInt(currentThread.executionTime) > parseInt(slowThread.executionTime) ? currentThread : slowThread;
     }, category[0]);
   };
 
@@ -74,7 +86,7 @@ function MyThreads({ data }) {
             category={selectedCategory}
             total={totalMemory(selectedCategoryData)}
             largest={largestMemory(selectedCategoryData)}
-            summaryData={selectedCategoryData[0]}
+            slowest={slowestThread(selectedCategoryData)}
             threadCount={selectedCategoryData.length}
           />
           <ThreadBubbles threads={selectedCategoryData} />

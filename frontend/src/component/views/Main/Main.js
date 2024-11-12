@@ -10,7 +10,7 @@ function Main() {
   const [TotalThreadCount, setTotalThreadCount] = useState("");
   const navigate = useNavigate();
   const handleSubmit = async () => {
-    const url = "/test-post";
+    const url = "/api";
     const data = {
       host: Host,
       port : Port,
