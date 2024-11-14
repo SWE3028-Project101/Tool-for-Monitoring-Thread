@@ -3,7 +3,7 @@ import './App.css';
 import {BrowserRouter, Route, Routes} from 'react-router-dom'
 import Main from './component/views/Main/Main'
 import MyThreads from './component/views/myThreads/MyThreads'
-import Total from './component/views/total/total'
+import Total from './component/views/total/TotalPage'
 
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';

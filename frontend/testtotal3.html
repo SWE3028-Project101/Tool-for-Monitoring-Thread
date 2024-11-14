@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Test</title>
+  <link rel="stylesheet" href="./src/component/views/total/Ranking.css">
+</head>
+<body>
+  <div class="total-page">
+    <h1>Ranking</h1>
+    
+    <!-- Ranking Tabs -->
+    <div class="ranking-tabs">
+      <button class="ranking-tab">Call Count Ranking</button>
+      <button class="ranking-tab active">Memory Usage Ranking</button> <!-- Memory 버튼 활성화 -->
+    </div>
+    
+    <!-- Call Count 탭의 Average와 Max 버튼 -->
+    <div class="memory-tabs" style="display: none;">
+      <button class="memory-tab">Average</button>
+      <button class="memory-tab">Max</button>
+    </div>
+
+    <!-- Memory Usage 탭의 DatePicker (더미 형태로 추가) -->
+    <div class="date-picker">
+      <label>Select Date and Time:</label>
+      <input type="datetime-local">
+    </div>
+
+    <!-- Ranking List -->
+    <div class="ranking-list">
+      <div class="ranking-item">1. /user/apply - memory usage: 43.2MB</div>
+      <div class="ranking-item">2. /user/submit - memory usage: 50.5MB</div>
+      <div class="ranking-item">3. /user/review - memory usage: 40.1MB</div>
+    </div>
+  </div>
+</body>
+</html>
