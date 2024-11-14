@@ -1,49 +1,112 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './Ranking.css';
 
 function Ranking({ data }) {
-  const [sortCriteria, setSortCriteria] = useState('callCount');
-  const [memoryType, setMemoryType] = useState('average');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedHour, setSelectedHour] = useState("00");
+  const [memoryType, setMemoryType] = useState('average');
+  const [sortCriteria, setSortCriteria] = useState('callCount');
   const [showData, setShowData] = useState(false);
 
-  // yymmdd_hh 형식으로 변환하는 함수
-  const formatDateTime = (date, hour) => {
-    const year = date.getFullYear().toString().slice(-2);
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${year}${month}${day}_${hour}`;
-  };
+  // Call Count Ranking: 선택한 시간대의 데이터를 UTC 기준으로 필터링
+  const filteredDataForCallCount = data.filter(item => {
+    const itemDate = new Date(item.timestamp).getTime();
+    const startDate = Date.UTC(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      selectedDate.getDate(),
+      parseInt(selectedHour),
+      0,
+      0,
+      0
+    );
 
-  // 데이터를 필터링하는 함수
-  const filteredData = data.filter(item => {
-    if (sortCriteria === 'callCount') return true;
+    const endDate = startDate + (59 * 60 * 1000) + (59 * 1000) + 999;
 
-    const itemDate = new Date(item.timestamp);
-    const startDate = new Date(selectedDate);
-    startDate.setHours(selectedHour);
-    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
-
-    return itemDate >= startDate && itemDate < endDate;
+    return itemDate >= startDate && itemDate <= endDate;
   });
 
-  // 데이터를 정렬하는 함수
-  const sortedData = [...filteredData].sort((a, b) => {
-    if (sortCriteria === 'callCount') {
-      return memoryType === 'average' ? b.averageCallCount - a.averageCallCount : b.maxCallCount - a.maxCallCount;
+  const calculateCallCount = (data) => {
+    const callCountMap = {};
+    data.forEach(item => {
+      callCountMap[item.uri] = (callCountMap[item.uri] || 0) + 1;
+    });
+    return Object.keys(callCountMap).map(uri => ({
+      uri,
+      maxCallCount: callCountMap[uri],
+    }));
+  };
+
+  const sortedCallCountData = calculateCallCount(filteredDataForCallCount).sort((a, b) => {
+    return b.maxCallCount - a.maxCallCount;
+  });
+
+  const getYesterdayData = () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(yesterday);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    return data.filter(item => {
+      const itemDate = new Date(item.timestamp);
+      return itemDate >= yesterday && itemDate <= endOfDay;
+    });
+  };
+
+  const calculateMemoryUsage = (data) => {
+    const memoryUsageMap = {};
+
+    data.forEach(item => {
+      if (!memoryUsageMap[item.uri]) {
+        memoryUsageMap[item.uri] = {
+          totalMemory: 0,
+          maxMemory: 0,
+          count: 0,
+        };
+      }
+      memoryUsageMap[item.uri].totalMemory += item.memoryUsage;
+      memoryUsageMap[item.uri].maxMemory = Math.max(memoryUsageMap[item.uri].maxMemory, item.memoryUsage);
+      memoryUsageMap[item.uri].count += 1;
+    });
+
+    return Object.keys(memoryUsageMap).map(uri => ({
+      uri,
+      averageMemoryUsage: memoryUsageMap[uri].totalMemory / memoryUsageMap[uri].count,
+      maxMemoryUsage: memoryUsageMap[uri].maxMemory,
+    }));
+  };
+
+  const yesterdayData = getYesterdayData();
+  const memoryUsageData = calculateMemoryUsage(yesterdayData);
+
+  const sortedMemoryUsageData = memoryUsageData.sort((a, b) => {
+    if (memoryType === 'average') {
+      return b.averageMemoryUsage - a.averageMemoryUsage;
     } else {
-      return b.memoryUsage - a.memoryUsage;
+      return b.maxMemoryUsage - a.maxMemoryUsage;
     }
   });
 
-  // 상위 10개 항목만 표시
-  const topTenData = sortedData.slice(0, 10);
+  const topTenData = sortCriteria === 'callCount' ? sortedCallCountData.slice(0, 10) : sortedMemoryUsageData.slice(0, 10);
 
   const handleSelect = () => {
     setShowData(true);
+  };
+
+  useEffect(() => {
+    if (sortCriteria === 'memoryUsage') {
+      setShowData(true);
+    }
+  }, [sortCriteria, memoryType]);
+
+  const getYesterdayString = () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    return `${yesterday.getFullYear()}/${(yesterday.getMonth() + 1).toString().padStart(2, '0')}/${yesterday.getDate().toString().padStart(2, '0')}`;
   };
 
   return (
@@ -64,14 +127,14 @@ function Ranking({ data }) {
           onClick={() => {
             setSortCriteria('memoryUsage');
             setMemoryType('average');
-            setShowData(false);
+            setShowData(true);
           }}
         >
           Memory Usage Ranking
         </button>
       </div>
 
-      {sortCriteria === 'memoryUsage' && (
+      {sortCriteria === 'callCount' && (
         <div className="date-picker">
           <label>Select Date:</label>
           <DatePicker
@@ -90,21 +153,42 @@ function Ranking({ data }) {
             })}
           </select>
           <button onClick={handleSelect}>Select</button>
-          <p>Selected Date and Time: {formatDateTime(selectedDate, selectedHour)}</p>
+        </div>
+      )}
+
+      {sortCriteria === 'memoryUsage' && (
+        <div className="memory-type-selector">
+          <button
+            className={`memory-type-btn ${memoryType === 'average' ? 'active' : ''}`}
+            onClick={() => setMemoryType('average')}
+          >
+            Average
+          </button>
+          <button
+            className={`memory-type-btn ${memoryType === 'max' ? 'active' : ''}`}
+            onClick={() => setMemoryType('max')}
+          >
+            Max
+          </button>
+          <p>{getYesterdayString()}</p>
         </div>
       )}
 
       {showData && (
         <div className="ranking-list">
-          {topTenData.map((item, index) => (
-            <div key={index} className="ranking-item">
-              {sortCriteria === 'callCount' ? (
-                <p>{`${index + 1}. ${item.uri} - call count: ${memoryType === 'average' ? item.averageCallCount : item.maxCallCount}`}</p>
-              ) : (
-                <p>{`${index + 1}. ${item.uri} - memory usage: ${item.memoryUsage}MB`}</p>
-              )}
-            </div>
-          ))}
+          {topTenData.length > 0 ? (
+            topTenData.map((item, index) => (
+              <div key={index} className="ranking-item">
+                {sortCriteria === 'callCount' ? (
+                  <p>{`${index + 1}. ${item.uri} - call count: ${item.maxCallCount}`}</p>
+                ) : (
+                  <p>{`${index + 1}. ${item.uri} - memory usage: ${memoryType === 'average' ? item.averageMemoryUsage : item.maxMemoryUsage}MB`}</p>
+                )}
+              </div>
+            ))
+          ) : (
+            <p>No data available for the selected time period.</p>
+          )}
         </div>
       )}
     </div>
