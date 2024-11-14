@@ -127,6 +127,23 @@ app.get('/api', (req, res) => {
     }
 });
 
+app.get('/api/error', (req, res) => {
+
+    try {
+        const data = fs.readFileSync('data.json', 'utf-8');
+        const jsonData = JSON.parse(data);
+
+        const filteredAndSortedData = jsonData
+            .filter(item => item.isError === "true") // isError가 true인 항목만 필터링
+            .sort((a, b) => new Date(b.time) - new Date(a.time)); // 최신순으로 정렬
+        res.send(filteredAndSortedData);
+
+    } catch (error) {
+        console.error('파일을 읽거나 파싱하는 중 오류가 발생했습니다');
+        return res.status(500).send('오류가 발생했습니다.');
+    }
+});
+
 app.get('/api/rank', (req, res) => {
 
     try {
