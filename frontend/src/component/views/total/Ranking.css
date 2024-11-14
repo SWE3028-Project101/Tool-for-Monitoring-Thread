@@ -1,79 +1,147 @@
+/* Ranking Container */
 .ranking-container {
-  margin: 20px;
-  background-color: #b0f4e6; /* 배경 색상 */
-  padding: 20px;
-  border-radius: 8px; /* 모서리 둥글게 */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+  margin: 20px auto;
+  padding: 30px;
+  max-width: 900px;
+  background-color: #f9fafb; /* 부드러운 배경 색상 */
+  border-radius: 10px; /* 둥근 모서리 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
 }
 
+/* Tab Buttons */
 .ranking-tabs {
   display: flex;
-  margin-bottom: 10px;
+  justify-content: space-around;
+  margin-bottom: 20px;
 }
 
 .ranking-tab {
-  padding: 10px 20px;
-  margin-right: 10px;
+  padding: 12px 24px;
   cursor: pointer;
-  background-color: #e0e0e0; /* 기본 배경 색상 */
-  border: none;
-  border-radius: 4px; /* 모서리 둥글게 */
-  transition: background-color 0.3s ease; /* 호버 효과 부드럽게 */
+  background-color: #ffffff; /* 흰색 배경 */
+  border: 2px solid #007bff; /* 파란색 테두리 */
+  border-radius: 50px; /* 둥근 버튼 */
+  font-size: 16px;
+  font-weight: bold;
+  color: #007bff;
+  transition: all 0.3s ease-in-out;
 }
 
 .ranking-tab:hover {
-  background-color: #d0d0d0; /* 호버 시 색상 변화 */
+  background-color: #007bff; /* 호버 시 배경 색상 */
+  color: white; /* 호버 시 텍스트 색상 */
 }
 
 .ranking-tab.active {
   background-color: #007bff; /* 활성화된 탭 색상 */
   color: white;
+  border: 2px solid #0056b3; /* 활성화된 탭의 테두리 색상 */
 }
 
-.memory-tabs {
+/* Memory Type Selector (Average / Max) */
+.memory-type-selector {
   display: flex;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  justify-content: center;
+  margin-top: 20px;
 }
 
-.memory-tab {
-  padding: 10px 20px;
-  margin-right: 10px;
+.memory-type-btn {
+  padding: 12px 30px;
+  margin: 0 15px;
   cursor: pointer;
-  background-color: #e0e0e0; /* 기본 배경 색상 */
-  border: none;
-  border-radius: 4px; /* 모서리 둥글게 */
-  transition: background-color 0.3s ease; /* 호버 효과 부드럽게 */
+  background-color: #ffffff;
+  border: 2px solid #007bff;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #007bff;
+  transition: all 0.3s ease-in-out;
 }
 
-.memory-tab:hover {
-  background-color: #d0d0d0; /* 호버 시 색상 변화 */
-}
-
-.memory-tab.active {
-  background-color: #007bff; /* 활성화된 메모리 탭 색상 */
+.memory-type-btn:hover {
+  background-color: #007bff;
   color: white;
 }
 
+.memory-type-btn.active {
+  background-color: #007bff;
+  color: white;
+  border: 2px solid #0056b3;
+}
+
+/* DatePicker and Hour Selector */
 .date-picker {
-  margin-top: 10px;
-  margin-bottom: 20px;
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.ranking-list, .memory-list {
-  margin-top: 10px;
+.date-picker select,
+.date-picker input {
+  padding: 8px 16px;
+  margin: 5px 10px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
 }
 
-.ranking-item, .memory-item {
-  background-color: #00c5a4; /* 항목 배경 색상 */
+.date-picker button {
+  padding: 10px 20px;
+  background-color: #007bff;
   color: white;
-  padding: 10px;
-  border-radius: 8px; /* 모서리 둥글게 */
-  margin-bottom: 8px;
+  border: none;
+  border-radius: 8px;
   font-size: 16px;
-  transition: transform 0.2s; /* 마우스 오버 효과 */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.ranking-item:hover, .memory-item:hover {
-  transform: translateY(-2px); /* 항목 마우스 오버 시 살짝 위로 이동 */
+.date-picker button:hover {
+  background-color: #0056b3;
+}
+
+/* Ranking List */
+.ranking-list {
+  margin-top: 30px;
+}
+
+.ranking-item {
+  background-color: #00c5a4;
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.ranking-item:hover {
+  transform: translateY(-5px); /* 항목 마우스 오버 시 살짝 위로 이동 */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .ranking-container {
+    padding: 20px;
+  }
+
+  .ranking-tabs {
+    flex-direction: column;
+    margin-bottom: 15px;
+  }
+
+  .ranking-tab {
+    margin-bottom: 10px;
+  }
+
+  .ranking-list {
+    margin-top: 15px;
+  }
+
+  .ranking-item {
+    font-size: 14px;
+  }
 }
