@@ -83,6 +83,17 @@ app.post('/api', (req, res) => {
     }
 });
 
+app.get('/api/mainPage', (req, res) => {
+    try {
+        const data = fs.readFileSync('data.json', 'utf-8');
+        const jsonData = JSON.parse(data); // JSON 문자열을 객체로 변환
+        res.send(jsonData);
+    } catch (error) {
+        console.error('파일을 읽거나 파싱하는 중 오류가 발생했습니다');
+        return res.status(500).send('오류가 발생했습니다.');
+    }
+});
+
 //post로 host와 port를 먼저 받아야 함.
 app.get('/api', (req, res) => {
 
