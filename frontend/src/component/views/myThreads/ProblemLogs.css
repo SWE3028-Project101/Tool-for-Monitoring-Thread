@@ -1,6 +1,5 @@
 .api-log {
   background-color: #ffcdd2;
-  padding: 10px;
   border-radius: 16px;
   max-height: 200px;
   overflow-y: hidden;
@@ -8,8 +7,7 @@
 }
 
 .api-log h3 {
-  margin: 0;
-  margin-left: 4px;
+  margin-left: 16px;
   text-align: left;
   height: 40px;
 }
@@ -17,12 +15,18 @@
 .api-log ul {
   list-style: none;
   text-align: left;
-  padding: 0;
-  margin: 0;
+  padding-left: 16px;
   max-height: calc(200px - 40px);
   overflow-y: auto;
 }
 
 .api-log li {
-  padding: 5px 0;
+  padding: 0;
+}
+
+.api-log p {
+  list-style: none;
+  text-align: left;
+  padding-left: 16px;
+  max-height: calc(200px - 40px);
 }
