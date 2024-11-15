@@ -66,7 +66,8 @@ setInterval(fetchApiData, 5000);
 
 app.post('/api', (req, res) => {
     const {host, port: targetPort, threadPoolSize} = req.body;
-
+    console.log('host : ' + host);
+    console.log('port : ' + port);
     global.portNum = targetPort
     global.hostName = host
 

@@ -13,7 +13,7 @@ function App() {
   const [data, setData] = useState(null);
   const callApi = async() => {
     try {
-      const response = await axios.get("test");
+      const response = await axios.get("");
       setData(response.data);
       console.log(response.data);
     } catch (error) {
