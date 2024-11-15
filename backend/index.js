@@ -197,18 +197,73 @@ app.get('/api/rank', (req, res) => {
         const title = req.query.title
         const date = req.query.date // 형식은 2024-10-06
         const time = req.query.time // 형식은 18
+        const calc = req.query.calc // 형식은 18
         const dateTime = date + "T" + time
 
-        const groupedByDateTime = jsonData.filter(item => item.time.includes(dateTime));
+        if (title === "memoryUsage" && calc === "average") {
+            const groupedData = jsonData.reduce((acc, item) => {
+                const uri = item.uri;
+                const memoryUsage = parseFloat(item.memoryUsage);
 
-        if (title === "memoryUsage") {
-            groupedByDateTime.sort((a, b) => parseFloat(b.memoryUsage) - parseFloat(a.memoryUsage));
+                if (!acc[uri]) {
+                    acc[uri] = {totalMemoryUsage: 0, count: 0};
+                }
+                acc[uri].totalMemoryUsage += memoryUsage;
+                acc[uri].count += 1;
+
+                return acc;
+            }, {});
+
+            const result = Object.entries(groupedData).map(([uri, {totalMemoryUsage, count}]) => ({
+                uri,
+                averageMemoryUsage: (totalMemoryUsage / count).toFixed(0), // 평균값 계산 및 소수점 제거
+            }));
+
+            res.send({data: result});
+
+        } else if (title === "memoryUsage" && calc === "max") {
+            const groupedData = jsonData.reduce((acc, item) => {
+                const uri = item.uri;
+                const memoryUsage = parseFloat(item.memoryUsage);
+
+                if (!acc[uri]) {
+                    acc[uri] = {maxMemoryUsage: memoryUsage};
+                } else {
+                    acc[uri].maxMemoryUsage = Math.max(acc[uri].maxMemoryUsage, memoryUsage);
+                }
+
+                return acc;
+            }, {});
+
+// 결과 변환
+            const result = Object.entries(groupedData).map(([uri, {maxMemoryUsage}]) => ({
+                uri,
+                maxMemoryUsage: maxMemoryUsage.toString() // 숫자를 문자열로 변환
+            }));
+            res.send({data: result});
+
         } else if (title === "callCount") {
-            groupedByDateTime.sort((a, b) => parseInt(b.calledNum) - parseInt(a.calledNum));
+            const groupedByDateTime = jsonData.filter(item => item.time.includes(dateTime));
+
+            const groupedData = groupedByDateTime.reduce((acc, item) => {
+                const uri = item.uri;
+                const calledNum = parseFloat(item.calledNum);
+
+                if (!acc[uri]) {
+                    acc[uri] = {uri, calledNum};
+                }
+
+                return acc;
+            }, {});
+
+            const sortedData = Object.values(groupedData).sort((a, b) => b.calledNum - a.calledNum);
+            res.send({data: sortedData});
+        } else {
+            res.send("get api parameter를 올바르게 넣어주세요.");
         }
 
-        res.send({data: groupedByDateTime});
-    } catch (error) {
+    } catch
+        (error) {
         console.error('파일을 읽거나 파싱하는 중 오류가 발생했습니다');
         return res.status(500).send('오류가 발생했습니다.');
     }
