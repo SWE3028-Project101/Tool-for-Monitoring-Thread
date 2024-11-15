@@ -2,7 +2,6 @@ import React from 'react';
 import './ProblemLogs.css';
 
 function ProblemLogs({ logs }) {
-  // Ensure that data is defined and an array before trying to filter it
   const errorLogs = Array.isArray(logs) ? logs.filter(item => item.isError) : [];
   console.log("Error Logs:", errorLogs);
   console.log("logs: ", logs);
@@ -14,7 +13,7 @@ function ProblemLogs({ logs }) {
         <ul>
           {errorLogs.map((item, index) => (
             <li key={index}>
-              <strong>{index + 1}.</strong> {item.uri} - memory usage: {item.memoryUsage}MB, thread time: {item.executionTime}ms, ({item.time})
+              <strong>{index + 1}.</strong> {item.uri} - memory usage: {Math.round(item.memoryUsage/1_000_000)}MB, thread time: {item.executionTime}ms, ({item.time})
             </li>
           ))}
         </ul>

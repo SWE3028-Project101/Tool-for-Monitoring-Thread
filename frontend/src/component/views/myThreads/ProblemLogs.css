@@ -1,26 +1,28 @@
 .api-log {
-    background-color: #ffcdd2;
-    padding: 10px;
-    border-radius: 5px;
-    max-height: 200px;
-    overflow-y: hidden;
-  }
-  
-  .api-log h3 {
-    margin: 0;
-    text-align: left;
-    height: 40px;
-  }
-  
-  .api-log ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    max-height: calc(200px - 40px);
-    overflow-y: auto;
-  }
-  
-  .api-log li {
-    padding: 5px 0;
-  }
-  
+  background-color: #ffcdd2;
+  padding: 10px;
+  border-radius: 16px;
+  max-height: 200px;
+  overflow-y: hidden;
+  margin: 16px;
+}
+
+.api-log h3 {
+  margin: 0;
+  margin-left: 4px;
+  text-align: left;
+  height: 40px;
+}
+
+.api-log ul {
+  list-style: none;
+  text-align: left;
+  padding: 0;
+  margin: 0;
+  max-height: calc(200px - 40px);
+  overflow-y: auto;
+}
+
+.api-log li {
+  padding: 5px 0;
+}
