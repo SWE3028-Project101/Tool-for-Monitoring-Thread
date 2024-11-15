@@ -137,47 +137,40 @@ app.get('/api/mainPage', (req, res) => {
 //post로 host와 port를 먼저 받아야 함.
 app.get('/api', (req, res) => {
 
-    try {
-        const data = fs.readFileSync('data.json', 'utf-8');
-        const jsonData = JSON.parse(data); // JSON 문자열을 객체로 변환
+        try {
+            const data = fs.readFileSync('data.json', 'utf-8');
+            const jsonData = JSON.parse(data); // JSON 문자열을 객체로 변환
 
-        const searchString = req.query.search
-        const date = req.query.date // 형식은 2024-10-06
-        const time = req.query.time // 형식은 18
-        const memoryUsage = req.query.memoryUsage
-        const executionTime = req.query.executionTime // 형식은 18
-        const dateTime = date + "T" + time
+            const searchString = req.query.search
+            const date = req.query.date // 형식은 2024-10-06
+            const time = req.query.time // 형식은 18
+            const memoryUsage = parseFloat(req.query.memoryUsage); // memoryUsage 기준 값
+            const executionTime = parseFloat(req.query.executionTime);
+            const dateTime = date + "T" + time
 
-        const matchingEntries = [...jsonData].filter(item => item.uri.includes(searchString));
-        const groupedByDateTime = matchingEntries.filter(item => item.time.includes(dateTime));
+            // searchString과 dateTime을 포함하는 항목만 필터링
+            const matchingEntries = [...jsonData].filter(item => item.uri.includes(searchString) && item.time.includes(dateTime));
 
-        if (executionTime === "desc") {
-            groupedByDateTime.sort((a, b) => {
-                const timeA = a.executionTime ? parseFloat(a.executionTime.replace('ms', '')) : 0; // 기본값 0 설정
-                const timeB = b.executionTime ? parseFloat(b.executionTime.replace('ms', '')) : 0; // 기본값 0 설정
-                return timeB - timeA;
-            });
-        } else if (executionTime === "asc") {
-            groupedByDateTime.sort((a, b) => {
-                const timeA = a.executionTime ? parseFloat(a.executionTime.replace('ms', '')) : 0; // 기본값 0 설정
-                const timeB = b.executionTime ? parseFloat(b.executionTime.replace('ms', '')) : 0; // 기본값 0 설정
-                return timeA - timeB;
-            });
+            // executionTime이 기준 이상인 항목 필터링 후 오름차순 정렬
+            const filteredAndSortedByExecutionTime = matchingEntries
+                .filter(item => parseFloat(item.executionTime.replace('ms', '')) >= executionTime)
+                .sort((a, b) => parseFloat(a.executionTime.replace('ms', '')) - parseFloat(b.executionTime.replace('ms', '')));
+
+            // memoryUsage가 기준 이상인 항목 필터링 후 오름차순 정렬
+            const filteredAndSortedByMemoryUsage = filteredAndSortedByExecutionTime
+                .filter(item => parseFloat(item.memoryUsage) >= memoryUsage)
+                .sort((a, b) => parseFloat(a.memoryUsage) - parseFloat(b.memoryUsage));
+
+            res.send({data: filteredAndSortedByMemoryUsage, number: filteredAndSortedByMemoryUsage.length});
+
+        } catch
+            (error) {
+            console.error('파일을 읽거나 파싱하는 중 오류가 발생했습니다');
+            return res.status(500).send('오류가 발생했습니다.');
         }
-
-        if (memoryUsage === "desc") {
-            groupedByDateTime.sort((a, b) => parseFloat(b.memoryUsage) - parseFloat(a.memoryUsage));
-        } else if (memoryUsage === "asc") {
-            groupedByDateTime.sort((a, b) => parseFloat(a.memoryUsage) - parseFloat(b.memoryUsage));
-        }
-
-        res.send({data: groupedByDateTime, number: groupedByDateTime.length});
-
-    } catch (error) {
-        console.error('파일을 읽거나 파싱하는 중 오류가 발생했습니다');
-        return res.status(500).send('오류가 발생했습니다.');
     }
-});
+)
+;
 
 app.get('/api/error', (req, res) => {
 
