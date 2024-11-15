@@ -75,6 +75,7 @@ function MyThreads({ data }) {
         setSelectedErrorCategory(extractedErrorCategory[0]);
       }
     }
+    return () => clearInterval(intervalIdError);
   }, [data, selectedCategory, selectedErrorCategory]);
 
   const handleCategorySelect = (category) => {
