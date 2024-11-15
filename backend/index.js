@@ -42,21 +42,62 @@ function fetchApiData() {
         }
 
         const transformedData = {
-            data: resBody.availableTags[0].values.map((_, index) => {
-                const errorTag = resBody.availableTags.find(tag => tag.tag === "error");
+            data: resBody.availableTags.find(tag => tag.tag === "requestNum")?.values.map((requestNumValue) => {
+                const index = parseInt(requestNumValue) - 1; // 1-based index for `requestNum`
+
+                const getValueBySuffix = (tag, suffix) => {
+                    const tagData = resBody.availableTags.find(t => t.tag === tag);
+                    const matchingValue = tagData?.values.find(value => value.endsWith(`-${suffix}`));
+                    return matchingValue ? matchingValue.replace(/-\d+$/, '') : null;
+                };
+
+                // Suffix for URI
+                const uriWithSuffix = resBody.availableTags.find(tag => tag.tag === "uri")?.values[index];
+                const suffix = uriWithSuffix?.split('-').pop();
+
+                // Extract values based on suffix
+                const uri = uriWithSuffix ? uriWithSuffix.replace(/-\d+$/, '') : null;
+                const memoryUsage = getValueBySuffix("memoryUsage", suffix);
+                const executionTime = getValueBySuffix("executingTime", suffix);
+                const time = getValueBySuffix("currentTime", suffix);
+                const errorValue = getValueBySuffix("error", suffix);
+
+                // Determine isError based on error tag value
+                const isError = errorValue && errorValue.includes("no error") ? "false" : "true";
 
                 return {
-                    uri: resBody.availableTags.find(tag => tag.tag === "uri")?.values[index],
-                    memoryUsage: resBody.availableTags.find(tag => tag.tag === "memoryUsage")?.values[index],
-                    executionTime: resBody.availableTags.find(tag => tag.tag === "executingTime")?.values[index],
-                    time: resBody.availableTags.find(tag => tag.tag === "currentTime")?.values[index],
-                    isError: errorTag && errorTag.values[index] && errorTag.values[index].includes("error") ? "true" : "false",
-                    calledNum: resBody.availableTags.find(tag => tag.tag === "requestNum")?.values[index]
+                    uri: uri,
+                    memoryUsage: memoryUsage,
+                    executionTime: executionTime,
+                    time: time,
+                    isError: isError,
+                    calledNum: 0
                 };
             })
-        }
+        };
 
-        fs.writeFileSync('data.json', JSON.stringify(transformedData.data, null, 2), 'utf-8');
+        const updateCalledNumConsistently = (dataArray) => {
+            // Count occurrences of each unique URI
+            const uriCountMap = {};
+
+            // First pass to count total occurrences for each unique URI
+            dataArray.forEach(item => {
+                const uri = item.uri;
+                if (!uriCountMap[uri]) {
+                    uriCountMap[uri] = 1;
+                } else {
+                    uriCountMap[uri] += 1;
+                }
+            });
+
+            // Second pass to set calledNum based on uriCountMap
+            return dataArray.map(item => ({
+                ...item,
+                calledNum: uriCountMap[item.uri] // Set calledNum as the total count for this URI
+            }));
+        };
+
+        fs.writeFileSync('data.json', JSON.stringify(updateCalledNumConsistently(transformedData.data), null, 2), 'utf-8');
         console.log('Data saved to data.json');
     })
 }
