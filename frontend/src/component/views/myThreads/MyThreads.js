@@ -4,6 +4,7 @@ import TopTabs from './TopTabs';
 import CategorySummary from './CategorySummary';
 import ThreadBubbles from './ThreadBubbles';
 import ProblemLogs from './ProblemLogs';
+import axios from 'axios';
 // import './MyThreads.css';
 
 function MyThreads({ data }) {
@@ -11,6 +12,18 @@ function MyThreads({ data }) {
   const [categories, setCategories] = useState([]);
   const [categoryData, setCategoryData] = useState({});
   const navigate = useNavigate();
+  const [errorData, setErrorData] = useState(null);
+  const [errorCategoryData, setErrorCategoryData] = useState({});
+  const [selectedErrorCategory, setSelectedErrorCategory] = useState(null);
+  const callErrorApi = async() => {
+    try{
+      const response = await axios.get("http://localhost:8080/api/error");
+      setErrorData(response.data);
+      console.log(response.errorData);
+    } catch(error) {
+      console.error("error fetching(/api/error)");
+    }
+  }
 
   useEffect(() => {
     if (data && data.length > 0) {
@@ -37,13 +50,40 @@ function MyThreads({ data }) {
         setSelectedCategory(extractedCategories[0]);
       }
     }
-  }, [data, selectedCategory]);
+    callErrorApi();
+    const intervalIdError = setInterval(() => {
+      console.log("fetching data from backend...(/api/error)");
+      callErrorApi();
+    }, 5000);
+    if (errorData && errorData.length > 0) {
+      const extractedErrorCategory = Array.from(
+        new Set(
+          errorData.map(item => {
+            const errorcategory = `/${item.uri.split('/')[1] || ''}`;
+            return errorcategory === '/' ? '/' : `/${item.uri.split('/')[1]}`;
+          })
+        )
+      ).filter(Boolean);
+      const groupedErrorData = extractedErrorCategory.reduce((acc, category) => {
+        acc[category] = errorData.filter(item => {
+          return cateogry === '/' ? item.uri === '/' : item.uri.startsWith(category);
+        });
+        return acc;
+      }, {});
+      setErrorCategoryData(groupedErrorData);
+      if (selectedErrorCategory === null && extractedErrorCategory.length > 0) {
+        setSelectedErrorCategory(extractedErrorCategory[0]);
+      }
+    }
+  }, [data, selectedCategory, selectedErrorCategory]);
 
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
+    setSelectedErrorCategory(category);
   };
 
   const selectedCategoryData = categoryData[selectedCategory] || [];
+  const selectedErrorCategoryData = errorCategoryData[selectedErrorCategory] || [];
 
   const largestMemory = (category) => {
     if (!category || category.length === 0) return null;
@@ -90,7 +130,7 @@ function MyThreads({ data }) {
             threadCount={selectedCategoryData.length}
           />
           <ThreadBubbles threads={selectedCategoryData} />
-          <ProblemLogs logs={selectedCategoryData} />
+          <ProblemLogs logs={selectedErrorCategoryData} />
         </>
       ) : (
         <p>No data available</p>
