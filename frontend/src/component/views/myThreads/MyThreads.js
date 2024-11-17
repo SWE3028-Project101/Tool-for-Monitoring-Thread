@@ -20,7 +20,7 @@ function MyThreads({ data }) {
   const [selectedErrorCategory, setSelectedErrorCategory] = useState(null);
   const callErrorApi = async() => {
     try{
-      const response = await axios.get("http://localhost:8080/api/error");
+      const response = await axios.get("api/error");
       setErrorData(response.data);
       console.log(response.errorData);
     } catch(error) {
@@ -69,7 +69,7 @@ function MyThreads({ data }) {
       ).filter(Boolean);
       const groupedErrorData = extractedErrorCategory.reduce((acc, category) => {
         acc[category] = errorData.filter(item => {
-          return cateogry === '/' ? item.uri === '/' : item.uri.startsWith(category);
+          return category === '/' ? item.uri === '/' : item.uri.startsWith(category);
         });
         return acc;
       }, {});

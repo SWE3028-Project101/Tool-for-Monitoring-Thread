@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const app = express();
 const port = 9000;
+let transformedData;
 global.portNum = "";
 global.hostName = "";
 
@@ -41,7 +42,7 @@ function fetchApiData() {
             return;
         }
 
-        const transformedData = {
+        transformedData = {
             data: resBody.availableTags.find(tag => tag.tag === "requestNum")?.values.map((requestNumValue) => {
                 const index = parseInt(requestNumValue) - 1; // 1-based index for `requestNum`
 
@@ -63,7 +64,7 @@ function fetchApiData() {
                 const errorValue = getValueBySuffix("error", suffix);
 
                 // Determine isError based on error tag value
-                const isError = errorValue && errorValue.includes("no error") ? "false" : "true";
+                const isError = errorValue && errorValue.includes("no error") ? "true" : "false";
 
                 return {
                     uri: uri,
@@ -126,9 +127,10 @@ app.post('/api', (req, res) => {
 
 app.get('/api/mainPage', (req, res) => {
     try {
-        const data = fs.readFileSync('data.json', 'utf-8');
-        const jsonData = JSON.parse(data); // JSON 문자열을 객체로 변환
-        res.send(jsonData);
+        //const data = fs.readFileSync('data.json', 'utf-8');
+        //const jsonData = JSON.parse(data); // JSON 문자열을 객체로 변환
+        console.log("send",transformedData);
+        res.send(transformedData);
     } catch (error) {
         console.error('파일을 읽거나 파싱하는 중 오류가 발생했습니다');
         return res.status(500).send('오류가 발생했습니다.');
