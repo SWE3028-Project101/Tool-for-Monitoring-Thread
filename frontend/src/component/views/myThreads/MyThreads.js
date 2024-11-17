@@ -14,6 +14,7 @@ function MyThreads({ data }) {
   const [categoryData, setCategoryData] = useState({});
   const location = useLocation();
   const totalThreadCount = location.state?.totalThreadCount;
+  
   const navigate = useNavigate();
   const [errorData, setErrorData] = useState(null);
   const [errorCategoryData, setErrorCategoryData] = useState({});
@@ -29,10 +30,14 @@ function MyThreads({ data }) {
   }
 
   useEffect(() => {
-    if (data && data.length > 0) {
+    console.log("data is :",data);
+    console.log("data.data is : ",data.data);
+    
+    if (data && data.data.length > 0) {
+      console.log("ok");
       const extractedCategories = Array.from(
         new Set(
-          data.map(item => {
+          data.data.map(item => {
             const category = `/${item.uri.split('/')[1] || ''}`;
             return category === '/' ? '/' : `/${item.uri.split('/')[1]}`;
           })
@@ -49,15 +54,18 @@ function MyThreads({ data }) {
       }, {});
       
       setCategoryData(groupedData);
+
       if (selectedCategory === null && extractedCategories.length > 0) {
         setSelectedCategory(extractedCategories[0]);
       }
     }
     callErrorApi();
+
     const intervalIdError = setInterval(() => {
       console.log("fetching data from backend...(/api/error)");
       callErrorApi();
     }, 5000);
+
     if (errorData && errorData.length > 0) {
       const extractedErrorCategory = Array.from(
         new Set(
@@ -67,17 +75,21 @@ function MyThreads({ data }) {
           })
         )
       ).filter(Boolean);
+
       const groupedErrorData = extractedErrorCategory.reduce((acc, category) => {
         acc[category] = errorData.filter(item => {
           return category === '/' ? item.uri === '/' : item.uri.startsWith(category);
         });
         return acc;
       }, {});
+
       setErrorCategoryData(groupedErrorData);
+
       if (selectedErrorCategory === null && extractedErrorCategory.length > 0) {
         setSelectedErrorCategory(extractedErrorCategory[0]);
       }
     }
+
     return () => clearInterval(intervalIdError);
   }, [data, selectedCategory, selectedErrorCategory]);
 
@@ -87,6 +99,7 @@ function MyThreads({ data }) {
   };
 
   const selectedCategoryData = categoryData[selectedCategory] || [];
+  
   const selectedErrorCategoryData = errorCategoryData[selectedErrorCategory] || [];
 
   const largestMemory = (category) => {
