@@ -9,7 +9,7 @@ function Main() {
   const [Port, setPort] = useState("");
   const [TotalThreadCount, setTotalThreadCount] = useState("");
   const navigate = useNavigate();
-  
+
   const handleSubmit = async () => {
     const url = "/api";
     const data = {
@@ -20,7 +20,7 @@ function Main() {
     try{
       const response = await axios.post(url,data);
       console.log('Response: ', response.data);
-      navigate("/MyThreads");
+      navigate("/MyThreads",{ state: { totalThreadCount: TotalThreadCount } });
     } catch (error){
       console.error('Error: ',error.response ? error.response.data : error.message);
     }

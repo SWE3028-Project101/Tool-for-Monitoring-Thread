@@ -4,13 +4,17 @@ import TopTabs from './TopTabs';
 import CategorySummary from './CategorySummary';
 import ThreadBubbles from './ThreadBubbles';
 import ProblemLogs from './ProblemLogs';
+import { useLocation } from 'react-router-dom';
 // import './MyThreads.css';
 
 function MyThreads({ data }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categories, setCategories] = useState([]);
   const [categoryData, setCategoryData] = useState({});
+  const location = useLocation();
+  const totalThreadCount = location.state?.totalThreadCount;
   const navigate = useNavigate();
+  
 
   useEffect(() => {
     if (data && data.length > 0) {
