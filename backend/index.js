@@ -21,7 +21,7 @@ function fetchApiData() {
     const options = {
         uri: `http://${global.hostName}:${global.portNum}/actuator/metrics/custom.memory.usage`
     };
-
+    
     request(options, function (err, response, body) {
         if (err) {
             console.error('Request error:', err);
@@ -31,6 +31,7 @@ function fetchApiData() {
         // body가 비어 있는지 확인
         if (!body) {
             console.error('Empty response body');
+            transformedData = {};
             return;
         }
 
@@ -104,6 +105,7 @@ function fetchApiData() {
 }
 
 // 5초마다 API 호출
+
 setInterval(fetchApiData, 5000);
 
 app.post('/api', (req, res) => {

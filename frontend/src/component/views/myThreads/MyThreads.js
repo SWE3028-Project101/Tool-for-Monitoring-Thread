@@ -30,10 +30,10 @@ function MyThreads({ data }) {
   }
 
   useEffect(() => {
-    console.log("data is :",data);
-    console.log("data.data is : ",data.data);
+    //console.log("data is :", data);
+    //console.log("data.data is : ",data.data);
     
-    if (data && data.data.length > 0) {
+    if (data != undefined && 'data' in data) {
       console.log("ok");
       const extractedCategories = Array.from(
         new Set(
@@ -47,7 +47,7 @@ function MyThreads({ data }) {
       setCategories(extractedCategories);
 
       const groupedData = extractedCategories.reduce((acc, category) => {
-        acc[category] = data.filter(item => {
+        acc[category] = data.data.filter(item => {
           return category === '/' ? item.uri === '/' : item.uri.startsWith(category);
         });
         return acc;
@@ -58,6 +58,9 @@ function MyThreads({ data }) {
       if (selectedCategory === null && extractedCategories.length > 0) {
         setSelectedCategory(extractedCategories[0]);
       }
+    } else {
+      console.log("no data");
+      setSelectedCategory();
     }
     callErrorApi();
 
