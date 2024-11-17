@@ -6,7 +6,7 @@ const CategorySummary = ({ category, total, largest, slowest, threadCount }) => 
     <h3>{category} Memory Usage: {Math.round(total/1_000_000)} MB </h3>
     <p>Largest Memory Usage Thread: {Math.round(largest.memoryUsage/1_000_000)} MB</p>
     <p>Slowest Thread: {slowest.executionTime} ms</p>
-    <p>Total Threads Called: {threadCount}</p>
+    <p>Total Threads Count: {threadCount}</p>
   </div>
 );
 

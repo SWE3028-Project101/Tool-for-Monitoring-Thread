@@ -42,21 +42,62 @@ function fetchApiData() {
         }
 
         const transformedData = {
-            data: resBody.availableTags[0].values.map((_, index) => {
-                const errorTag = resBody.availableTags.find(tag => tag.tag === "error");
+            data: resBody.availableTags.find(tag => tag.tag === "requestNum")?.values.map((requestNumValue) => {
+                const index = parseInt(requestNumValue) - 1; // 1-based index for `requestNum`
+
+                const getValueBySuffix = (tag, suffix) => {
+                    const tagData = resBody.availableTags.find(t => t.tag === tag);
+                    const matchingValue = tagData?.values.find(value => value.endsWith(`-${suffix}`));
+                    return matchingValue ? matchingValue.replace(/-\d+$/, '') : null;
+                };
+
+                // Suffix for URI
+                const uriWithSuffix = resBody.availableTags.find(tag => tag.tag === "uri")?.values[index];
+                const suffix = uriWithSuffix?.split('-').pop();
+
+                // Extract values based on suffix
+                const uri = uriWithSuffix ? uriWithSuffix.replace(/-\d+$/, '') : null;
+                const memoryUsage = getValueBySuffix("memoryUsage", suffix);
+                const executionTime = getValueBySuffix("executingTime", suffix);
+                const time = getValueBySuffix("currentTime", suffix);
+                const errorValue = getValueBySuffix("error", suffix);
+
+                // Determine isError based on error tag value
+                const isError = errorValue && errorValue.includes("no error") ? "false" : "true";
 
                 return {
-                    uri: resBody.availableTags.find(tag => tag.tag === "uri")?.values[index],
-                    memoryUsage: resBody.availableTags.find(tag => tag.tag === "memoryUsage")?.values[index],
-                    executionTime: resBody.availableTags.find(tag => tag.tag === "executingTime")?.values[index],
-                    time: resBody.availableTags.find(tag => tag.tag === "currentTime")?.values[index],
-                    isError: errorTag && errorTag.values[index] && errorTag.values[index].includes("error") ? "true" : "false",
-                    calledNum: resBody.availableTags.find(tag => tag.tag === "requestNum")?.values[index]
+                    uri: uri,
+                    memoryUsage: memoryUsage,
+                    executionTime: executionTime,
+                    time: time,
+                    isError: isError,
+                    calledNum: 0
                 };
             })
-        }
+        };
 
-        fs.writeFileSync('data.json', JSON.stringify(transformedData.data, null, 2), 'utf-8');
+        const updateCalledNumConsistently = (dataArray) => {
+            // Count occurrences of each unique URI
+            const uriCountMap = {};
+
+            // First pass to count total occurrences for each unique URI
+            dataArray.forEach(item => {
+                const uri = item.uri;
+                if (!uriCountMap[uri]) {
+                    uriCountMap[uri] = 1;
+                } else {
+                    uriCountMap[uri] += 1;
+                }
+            });
+
+            // Second pass to set calledNum based on uriCountMap
+            return dataArray.map(item => ({
+                ...item,
+                calledNum: uriCountMap[item.uri] // Set calledNum as the total count for this URI
+            }));
+        };
+
+        fs.writeFileSync('data.json', JSON.stringify(updateCalledNumConsistently(transformedData.data), null, 2), 'utf-8');
         console.log('Data saved to data.json');
     })
 }
@@ -97,47 +138,40 @@ app.get('/api/mainPage', (req, res) => {
 //post로 host와 port를 먼저 받아야 함.
 app.get('/api', (req, res) => {
 
-    try {
-        const data = fs.readFileSync('data.json', 'utf-8');
-        const jsonData = JSON.parse(data); // JSON 문자열을 객체로 변환
+        try {
+            const data = fs.readFileSync('data.json', 'utf-8');
+            const jsonData = JSON.parse(data); // JSON 문자열을 객체로 변환
 
-        const searchString = req.query.search
-        const date = req.query.date // 형식은 2024-10-06
-        const time = req.query.time // 형식은 18
-        const memoryUsage = req.query.memoryUsage
-        const executionTime = req.query.executionTime // 형식은 18
-        const dateTime = date + "T" + time
+            const searchString = req.query.search
+            const date = req.query.date // 형식은 2024-10-06
+            const time = req.query.time // 형식은 18
+            const memoryUsage = parseFloat(req.query.memoryUsage); // memoryUsage 기준 값
+            const executionTime = parseFloat(req.query.executionTime);
+            const dateTime = date + "T" + time
 
-        const matchingEntries = [...jsonData].filter(item => item.uri.includes(searchString));
-        const groupedByDateTime = matchingEntries.filter(item => item.time.includes(dateTime));
+            // searchString과 dateTime을 포함하는 항목만 필터링
+            const matchingEntries = [...jsonData].filter(item => item.uri.includes(searchString) && item.time.includes(dateTime));
 
-        if (executionTime === "desc") {
-            groupedByDateTime.sort((a, b) => {
-                const timeA = a.executionTime ? parseFloat(a.executionTime.replace('ms', '')) : 0; // 기본값 0 설정
-                const timeB = b.executionTime ? parseFloat(b.executionTime.replace('ms', '')) : 0; // 기본값 0 설정
-                return timeB - timeA;
-            });
-        } else if (executionTime === "asc") {
-            groupedByDateTime.sort((a, b) => {
-                const timeA = a.executionTime ? parseFloat(a.executionTime.replace('ms', '')) : 0; // 기본값 0 설정
-                const timeB = b.executionTime ? parseFloat(b.executionTime.replace('ms', '')) : 0; // 기본값 0 설정
-                return timeA - timeB;
-            });
+            // executionTime이 기준 이상인 항목 필터링 후 오름차순 정렬
+            const filteredAndSortedByExecutionTime = matchingEntries
+                .filter(item => parseFloat(item.executionTime.replace('ms', '')) >= executionTime)
+                .sort((a, b) => parseFloat(a.executionTime.replace('ms', '')) - parseFloat(b.executionTime.replace('ms', '')));
+
+            // memoryUsage가 기준 이상인 항목 필터링 후 오름차순 정렬
+            const filteredAndSortedByMemoryUsage = filteredAndSortedByExecutionTime
+                .filter(item => parseFloat(item.memoryUsage) >= memoryUsage)
+                .sort((a, b) => parseFloat(a.memoryUsage) - parseFloat(b.memoryUsage));
+
+            res.send({data: filteredAndSortedByMemoryUsage, number: filteredAndSortedByMemoryUsage.length});
+
+        } catch
+            (error) {
+            console.error('파일을 읽거나 파싱하는 중 오류가 발생했습니다');
+            return res.status(500).send('오류가 발생했습니다.');
         }
-
-        if (memoryUsage === "desc") {
-            groupedByDateTime.sort((a, b) => parseFloat(b.memoryUsage) - parseFloat(a.memoryUsage));
-        } else if (memoryUsage === "asc") {
-            groupedByDateTime.sort((a, b) => parseFloat(a.memoryUsage) - parseFloat(b.memoryUsage));
-        }
-
-        res.send({data: groupedByDateTime, number: groupedByDateTime.length});
-
-    } catch (error) {
-        console.error('파일을 읽거나 파싱하는 중 오류가 발생했습니다');
-        return res.status(500).send('오류가 발생했습니다.');
     }
-});
+)
+;
 
 app.get('/api/error', (req, res) => {
 
@@ -164,18 +198,73 @@ app.get('/api/rank', (req, res) => {
         const title = req.query.title
         const date = req.query.date // 형식은 2024-10-06
         const time = req.query.time // 형식은 18
+        const calc = req.query.calc // 형식은 18
         const dateTime = date + "T" + time
 
-        const groupedByDateTime = jsonData.filter(item => item.time.includes(dateTime));
+        if (title === "memoryUsage" && calc === "average") {
+            const groupedData = jsonData.reduce((acc, item) => {
+                const uri = item.uri;
+                const memoryUsage = parseFloat(item.memoryUsage);
 
-        if (title === "memoryUsage") {
-            groupedByDateTime.sort((a, b) => parseFloat(b.memoryUsage) - parseFloat(a.memoryUsage));
+                if (!acc[uri]) {
+                    acc[uri] = {totalMemoryUsage: 0, count: 0};
+                }
+                acc[uri].totalMemoryUsage += memoryUsage;
+                acc[uri].count += 1;
+
+                return acc;
+            }, {});
+
+            const result = Object.entries(groupedData).map(([uri, {totalMemoryUsage, count}]) => ({
+                uri,
+                averageMemoryUsage: (totalMemoryUsage / count).toFixed(0), // 평균값 계산 및 소수점 제거
+            }));
+
+            res.send({data: result});
+
+        } else if (title === "memoryUsage" && calc === "max") {
+            const groupedData = jsonData.reduce((acc, item) => {
+                const uri = item.uri;
+                const memoryUsage = parseFloat(item.memoryUsage);
+
+                if (!acc[uri]) {
+                    acc[uri] = {maxMemoryUsage: memoryUsage};
+                } else {
+                    acc[uri].maxMemoryUsage = Math.max(acc[uri].maxMemoryUsage, memoryUsage);
+                }
+
+                return acc;
+            }, {});
+
+// 결과 변환
+            const result = Object.entries(groupedData).map(([uri, {maxMemoryUsage}]) => ({
+                uri,
+                maxMemoryUsage: maxMemoryUsage.toString() // 숫자를 문자열로 변환
+            }));
+            res.send({data: result});
+
         } else if (title === "callCount") {
-            groupedByDateTime.sort((a, b) => parseInt(b.calledNum) - parseInt(a.calledNum));
+            const groupedByDateTime = jsonData.filter(item => item.time.includes(dateTime));
+
+            const groupedData = groupedByDateTime.reduce((acc, item) => {
+                const uri = item.uri;
+                const calledNum = parseFloat(item.calledNum);
+
+                if (!acc[uri]) {
+                    acc[uri] = {uri, calledNum};
+                }
+
+                return acc;
+            }, {});
+
+            const sortedData = Object.values(groupedData).sort((a, b) => b.calledNum - a.calledNum);
+            res.send({data: sortedData});
+        } else {
+            res.send("get api parameter를 올바르게 넣어주세요.");
         }
 
-        res.send({data: groupedByDateTime});
-    } catch (error) {
+    } catch
+        (error) {
         console.error('파일을 읽거나 파싱하는 중 오류가 발생했습니다');
         return res.status(500).send('오류가 발생했습니다.');
     }
