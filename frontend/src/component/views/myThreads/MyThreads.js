@@ -33,7 +33,8 @@ function MyThreads({ data }) {
     console.log("data is :", data);
     //console.log("data.data is : ",data.data);
     
-    if (data!= null && data != undefined && 'data' in data) {
+    //&& 'data' in data
+    if (data!= null && data != undefined && Object.keys(data).length != 0) {
       console.log('here');
       const extractedCategories = Array.from(
         new Set(
@@ -104,7 +105,7 @@ function MyThreads({ data }) {
   };
 
   const selectedCategoryData = categoryData[selectedCategory] || [];
-  console.log("selected categoryData: ", selectedCategoryData);
+  //console.log("selected categoryData: ", selectedCategoryData);
   const selectedErrorCategoryData = errorCategoryData[selectedErrorCategory] || [];
 
   const largestMemory = (category) => {
