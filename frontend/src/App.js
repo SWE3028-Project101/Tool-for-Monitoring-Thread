@@ -22,13 +22,13 @@ function App() {
   }
   useEffect(() => {
     // 처음에 한 번 실행
-    callApi();
+    //callApi();
 
     // 5초마다 callApi 실행
     const intervalId = setInterval(() => {
       console.log("fetching data from backend...");
       callApi();
-    }, 5000);
+    }, 1000);
 
     // 컴포넌트 언마운트 시 interval 정리
     return () => clearInterval(intervalId);

@@ -30,11 +30,11 @@ function MyThreads({ data }) {
   }
 
   useEffect(() => {
-    //console.log("data is :", data);
+    console.log("data is :", data);
     //console.log("data.data is : ",data.data);
     
-    if (data != undefined && 'data' in data) {
-      console.log("ok");
+    if (data!= null && data != undefined && 'data' in data) {
+      console.log('here');
       const extractedCategories = Array.from(
         new Set(
           data.data.map(item => {
@@ -45,7 +45,7 @@ function MyThreads({ data }) {
       ).filter(Boolean);
       
       setCategories(extractedCategories);
-
+     
       const groupedData = extractedCategories.reduce((acc, category) => {
         acc[category] = data.data.filter(item => {
           return category === '/' ? item.uri === '/' : item.uri.startsWith(category);
@@ -69,7 +69,9 @@ function MyThreads({ data }) {
       callErrorApi();
     }, 5000);
 
-    if (errorData && errorData.length > 0) {
+    
+    if ( errorData && errorData.length > 1) {
+      console.log(errorData);
       const extractedErrorCategory = Array.from(
         new Set(
           errorData.map(item => {
@@ -102,7 +104,7 @@ function MyThreads({ data }) {
   };
 
   const selectedCategoryData = categoryData[selectedCategory] || [];
-  
+  console.log("selected categoryData: ", selectedCategoryData);
   const selectedErrorCategoryData = errorCategoryData[selectedErrorCategory] || [];
 
   const largestMemory = (category) => {
@@ -129,7 +131,7 @@ function MyThreads({ data }) {
   const goToTotal = () => {
     navigate("/total", { state: { data } });
   };
-
+ 
   return (
     <div>
       {categories.length > 0 && (
@@ -149,6 +151,7 @@ function MyThreads({ data }) {
             slowest={slowestThread(selectedCategoryData)}
             threadCount={selectedCategoryData.length}
           />
+         
           <ThreadBubbles threads={selectedCategoryData} />
           <ProblemLogs logs={selectedErrorCategoryData} />
         </>

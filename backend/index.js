@@ -27,7 +27,7 @@ function fetchApiData() {
             console.error('Request error:', err);
             return;
         }
-
+        console.log('data is ',body);
         // body가 비어 있는지 확인
         if (!body) {
             console.error('Empty response body');
@@ -65,7 +65,7 @@ function fetchApiData() {
                 const errorValue = getValueBySuffix("error", suffix);
 
                 // Determine isError based on error tag value
-                const isError = errorValue && errorValue.includes("no error") ? "true" : "false";
+                const isError = errorValue && errorValue.includes("no error") ? "false" : "true";
 
                 return {
                     uri: uri,
