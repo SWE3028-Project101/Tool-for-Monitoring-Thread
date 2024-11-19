@@ -1,12 +1,14 @@
 .thread-bubbles {
   display: flex;
   flex-wrap: wrap;
-  gap: 100px;
+  gap: 50px;
   padding: 20px 0;
+  max-height: 300px;
   justify-content: center;
   background-color: #f8f8f8;
   margin-left: 16px;
   margin-right: 16px;
+  overflow-y: auto;
 }
 
 .bubble {
