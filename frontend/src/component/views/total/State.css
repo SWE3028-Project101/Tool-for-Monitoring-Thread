@@ -1,0 +1,142 @@
+/* State Container */
+.state-container {
+    margin: 20px auto;
+    padding: 30px;
+    max-width: 900px;
+    background-color: #f9fafb; /* 부드러운 배경 색상 */
+    border-radius: 10px; /* 둥근 모서리 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
+  }
+  
+  /* Tab Buttons */
+  .state-tabs {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+  }
+  
+  .state-tab {
+    padding: 12px 24px;
+    cursor: pointer;
+    background-color: #ffffff; /* 흰색 배경 */
+    border: 2px solid #007bff; /* 파란색 테두리 */
+    border-radius: 50px; /* 둥근 버튼 */
+    font-size: 16px;
+    font-weight: bold;
+    color: #007bff;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .state-tab:hover {
+    background-color: #007bff; /* 호버 시 배경 색상 */
+    color: white; /* 호버 시 텍스트 색상 */
+  }
+  
+  .state-tab.active {
+    background-color: #007bff; /* 활성화된 탭 색상 */
+    color: white;
+    border: 2px solid #0056b3; /* 활성화된 탭의 테두리 색상 */
+  }
+  
+  /* State Table */
+  .state-table {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .state-column {
+    flex: 1;
+    padding: 10px;
+    margin: 0 10px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 각 열의 그림자 */
+  }
+  
+  /* Column Headers */
+  .state-header {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px 0;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  
+  /* Waiting Header */
+  .waiting-header {
+    background-color: #ffc107; /* 노란색 */
+    color: #000; /* 검은색 텍스트 */
+  }
+  
+  /* Runnable Header */
+  .runnable-header {
+    background-color: #28a745; /* 녹색 */
+    color: white; /* 흰색 텍스트 */
+  }
+  
+  /* Terminated Header */
+  .terminated-header {
+    background-color: #dc3545; /* 빨간색 */
+    color: white; /* 흰색 텍스트 */
+  }
+  
+  /* State Items */
+  .state-item {
+    padding: 10px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 각 항목의 그림자 */
+    text-align: center;
+  }
+  
+  .waiting-item {
+    background-color: #fff3cd; /* 연한 노란색 */
+    color: #856404; /* 갈색 텍스트 */
+  }
+  
+  .runnable-item {
+    background-color: #d4edda; /* 연한 녹색 */
+    color: #155724; /* 진한 녹색 텍스트 */
+  }
+  
+  .terminated-item {
+    background-color: #f8d7da; /* 연한 빨간색 */
+    color: #721c24; /* 진한 빨간색 텍스트 */
+  }
+  
+  /* No Data Placeholder */
+  .no-data {
+    text-align: center;
+    font-size: 14px;
+    color: #6c757d; /* 회색 텍스트 */
+    font-style: italic;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .state-container {
+      padding: 20px;
+    }
+  
+    .state-tabs {
+      flex-direction: column;
+      margin-bottom: 15px;
+    }
+  
+    .state-tab {
+      margin-bottom: 10px;
+    }
+  
+    .state-table {
+      flex-direction: column;
+    }
+  
+    .state-column {
+      margin-bottom: 15px;
+    }
+  }
+  

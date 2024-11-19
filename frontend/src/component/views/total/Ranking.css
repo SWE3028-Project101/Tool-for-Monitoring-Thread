@@ -42,31 +42,35 @@
 .memory-type-selector {
   display: flex;
   justify-content: center;
+  align-items: center;
   margin-top: 20px;
+  gap: 10px;
 }
 
 .memory-type-btn {
-  padding: 12px 30px;
-  margin: 0 15px;
+  padding: 12px 36px; /* 버튼의 폭을 더 넓게 */
   cursor: pointer;
-  background-color: #ffffff;
-  border: 2px solid #007bff;
+  background-color: #f1f3f5;
+  border: 2px solid #ccc;
   border-radius: 30px;
-  font-size: 14px;
+  font-size: 16px; /* 폰트 크기를 키워서 더 눈에 띄게 */
   font-weight: bold;
-  color: #007bff;
+  color: #333;
   transition: all 0.3s ease-in-out;
+  height: 48px; /* 높이를 DatePicker와 맞추기 */
 }
 
 .memory-type-btn:hover {
   background-color: #007bff;
   color: white;
+  border-color: #007bff;
 }
 
 .memory-type-btn.active {
   background-color: #007bff;
   color: white;
   border: 2px solid #0056b3;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
 }
 
 /* DatePicker and Hour Selector */

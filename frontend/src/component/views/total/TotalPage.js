@@ -1,26 +1,37 @@
-import React from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import State from './State';
 import Ranking from './Ranking';
+import Search from './Search';
+import './TotalPage.css';
 
 function TotalPage() {
-  const location = useLocation();
+    const [activeTab, setActiveTab] = useState('ranking');
 
-  // 받은 데이터 (더미 데이터)
-  const data = location.state?.data || [
-    { uri: "/user/apply", memoryUsage: 63.2, timestamp: "2024-11-14T09:00:10Z" },
-    { uri: "/user/apply", memoryUsage: 63.2, timestamp: "2024-11-14T09:04:00Z" },
-    { uri: "/user/profile", memoryUsage: 45.7, timestamp: "2024-11-14T10:00:00Z" },
-    { uri: "/admin/dashboard", memoryUsage: 78.3, timestamp: "2024-11-14T11:00:00Z" },
-    { uri: "/company/info", memoryUsage: 53.1, timestamp: "2024-11-14T09:00:00Z" },
-    { uri: "/user/apply", memoryUsage: 69.5, timestamp: "2024-11-14T13:00:00Z" }
-  ];
+    const renderContent = () => {
+        switch (activeTab) {
+            case 'search':
+                return <Search />;
+            case 'ranking':
+                return <Ranking />;
+            case 'state':
+                return <State />;
+            default:
+                return null;
+        }
+    };
 
-  return (
-    <div className="total-page">
-      <h1>Ranking</h1>
-      <Ranking data={data} /> {/* 데이터를 Ranking 컴포넌트로 전달 */}
-    </div>
-  );
+    return (
+        <div className="total-page">
+            <div className="tab-container">
+                <button className={`tab ${activeTab === 'search' ? 'active' : ''}`} onClick={() => setActiveTab('search')}>Search</button>
+                <button className={`tab ${activeTab === 'ranking' ? 'active' : ''}`} onClick={() => setActiveTab('ranking')}>Ranking</button>
+                <button className={`tab ${activeTab === 'state' ? 'active' : ''}`} onClick={() => setActiveTab('state')}>State</button>
+            </div>
+            <div className="content-container">
+                {renderContent()}
+            </div>
+        </div>
+    );
 }
 
 export default TotalPage;
