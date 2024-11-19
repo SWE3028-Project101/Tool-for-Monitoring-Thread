@@ -151,6 +151,8 @@ function MyThreads({ data }) {
             largest={largestMemory(selectedCategoryData)}
             slowest={slowestThread(selectedCategoryData)}
             threadCount={selectedCategoryData.length}
+            activeCount={data.data.length}
+            totalCount={totalThreadCount}
           />
          
           <ThreadBubbles threads={selectedCategoryData} />
