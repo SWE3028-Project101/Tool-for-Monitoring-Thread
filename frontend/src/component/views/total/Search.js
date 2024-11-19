@@ -16,7 +16,7 @@ function Search() {
     const handleSearch = async () => {
         const date = selectedDate.toISOString().split('T')[0]; // yyyy-mm-dd 형식
         try {
-            const response = await axios.get('http://localhost:9000/api/search', {
+            const response = await axios.get('api/search', {
                 params: {
                     uri,
                     responseTime,

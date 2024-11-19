@@ -21,7 +21,7 @@ function Ranking() {
 
         try {
             // 백엔드로부터 필터링된 데이터 가져오기
-            const response = await axios.get('http://localhost:9000/api/rank', {
+            const response = await axios.get('api/rank', {
                 params: {
                     date,
                     hour, // Call Count의 경우 시간 값만 전달
@@ -34,8 +34,9 @@ function Ranking() {
             console.error('Error fetching data:', error);
         }
     };
-
-    return (
+    console.log('data in summary ', data);
+    if(Object.keys(data).length != 0)
+        return (
         <div className="ranking-container">
             <div className="ranking-tabs">
                 <button
@@ -127,7 +128,7 @@ function Ranking() {
 
             {showData && (
                 <div className="ranking-list">
-                    {data.length > 0 ? (
+                    {Object.keys(data).length > 0  ? (
                         data.map((item, index) => (
                             <div key={index} className="ranking-item">
                                 {sortCriteria === 'callCount' ? (
@@ -143,7 +144,12 @@ function Ranking() {
                 </div>
             )}
         </div>
-    );
+    ); 
+    else {
+        return (
+            <div>no data</div>
+        )
+    }
 }
 
 export default Ranking;

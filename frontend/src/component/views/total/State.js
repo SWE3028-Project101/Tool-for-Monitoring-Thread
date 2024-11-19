@@ -12,7 +12,7 @@ function State() {
     // 백엔드에서 데이터를 가져오는 함수
     const fetchData = async () => {
         try {
-            const response = await axios.get('http://localhost:9000/api/state');
+            const response = await axios.get('api/state');
             setData(response.data); // 데이터는 { waiting: [], runnable: [], terminated: [] } 형태라고 가정
         } catch (error) {
             console.error('Error fetching data:', error);
