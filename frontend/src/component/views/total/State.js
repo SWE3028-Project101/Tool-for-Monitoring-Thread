@@ -28,8 +28,8 @@ function State() {
         <div className="state-table">
             <div className="state-column">
                 <div className="state-header waiting-header">Waiting</div>
-                {data.waiting.length > 0 ? (
-                    data.waiting.map((item, index) => (
+                {data.data ? (
+                    data.data.waiting.map((item, index) => (
                         <div key={index} className="state-item waiting-item">
                             {`${index + 1}. ${item}`}
                         </div>
@@ -40,8 +40,8 @@ function State() {
             </div>
             <div className="state-column">
                 <div className="state-header runnable-header">Runnable</div>
-                {data.runnable.length > 0 ? (
-                    data.runnable.map((item, index) => (
+                {data.data  ? (
+                    data.data.runnable.map((item, index) => (
                         <div key={index} className="state-item runnable-item">
                             {`${index + 1}. ${item}`}
                         </div>
@@ -52,8 +52,8 @@ function State() {
             </div>
             <div className="state-column">
                 <div className="state-header terminated-header">Terminated</div>
-                {data.terminated.length > 0 ? (
-                    data.terminated.map((item, index) => (
+                {data.data ? (
+                    data.data.terminated.map((item, index) => (
                         <div key={index} className="state-item terminated-item">
                             {`${index + 1}. ${item}`}
                         </div>

@@ -3,39 +3,71 @@ import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './Ranking.css';
+import Pagination from "./Pagination";
 
 function Ranking() {
-    const [data, setData] = useState([]);
+    let [data, setData] = useState([]);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedHour, setSelectedHour] = useState("00");
-    const [memoryType, setMemoryType] = useState('average');
+    const [calc, setCalc] = useState('average');
     const [sortCriteria, setSortCriteria] = useState('callCount');
     const [showData, setShowData] = useState(false);
+    const [totalPage, setTotalPage] = useState(0); // 전체 페이지 수 상태 추가
+    const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
+    const itemsPerPage = 1; // 페이지당 항목 수
 
-    const handleSelect = async () => {
+    const handleSelect = async ( page = 1) => {
         setShowData(true);
 
         // 날짜 및 시간 포맷팅
         const date = selectedDate.toISOString().split('T')[0]; // yyyy-mm-dd
-        const hour = sortCriteria === 'callCount' ? selectedHour : null;
+        const time = sortCriteria === 'callCount' ? selectedHour : null;
 
         try {
             // 백엔드로부터 필터링된 데이터 가져오기
             const response = await axios.get('api/rank', {
                 params: {
                     date,
-                    hour, // Call Count의 경우 시간 값만 전달
-                    memoryType: sortCriteria === 'memoryUsage' ? memoryType : null,
+                    time, // Call Count의 경우 시간 값만 전달
+                    calc: sortCriteria === 'memoryUsage' ? calc : null,
                     title: sortCriteria,
+                    page : page
                 },
             });
+            console.log('ranking data is ',response.data);
+
+            if (Object.keys(response.data).length === 0) {
+                setData([]);
+                setTotalPage(0); // 데이터가 없을 경우 페이지 수를 0으로 설정
+            } else {
+                setData(response.data.data);
+                setTotalPage(response.data.totalPage); // 백엔드에서 받은 totalPage 설정
+            }
+
+            if(Object.keys(response.data).length == 0){
+                setData([]);
+            } else {
             setData(response.data);
+            }
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
-    console.log('data in summary ', data);
-    if(Object.keys(data).length != 0)
+    //console.log('data in summary ', data);
+  //  if(Object.keys(data).length != 0)
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = data.data ? data.data.slice(indexOfFirstItem, indexOfLastItem) : [];
+    const pageCount = data.data ? Math.ceil(data.data.length / itemsPerPage) : 0;
+    
+    
+    
+    
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        handleSelect(page); // 페이지 변경 시 데이터 요청
+    };
+
         return (
         <div className="ranking-container">
             <div className="ranking-tabs">
@@ -43,7 +75,7 @@ function Ranking() {
                     className={`ranking-tab ${sortCriteria === 'callCount' ? 'active' : ''}`}
                     onClick={() => {
                         setSortCriteria('callCount');
-                        setMemoryType('average');
+                        setCalc('average');
                         setShowData(false);
                     }}
                 >
@@ -53,7 +85,7 @@ function Ranking() {
                     className={`ranking-tab ${sortCriteria === 'memoryUsage' ? 'active' : ''}`}
                     onClick={() => {
                         setSortCriteria('memoryUsage');
-                        setMemoryType('average');
+                        setCalc('average');
                         setShowData(true);
                     }}
                 >
@@ -94,18 +126,18 @@ function Ranking() {
             {sortCriteria === 'memoryUsage' && (
                 <div className="memory-type-selector">
                     <button
-                        className={`memory-type-btn ${memoryType === 'average' ? 'active' : ''}`}
+                        className={`memory-type-btn ${calc === 'average' ? 'active' : ''}`}
                         onClick={() => {
-                            setMemoryType('average');
+                            setCalc('average');
                             handleSelect(); // 메모리 유형 변경 시 자동으로 데이터 요청
                         }}
                     >
                         Average
                     </button>
                     <button
-                        className={`memory-type-btn ${memoryType === 'max' ? 'active' : ''}`}
+                        className={`memory-type-btn ${calc === 'max' ? 'active' : ''}`}
                         onClick={() => {
-                            setMemoryType('max');
+                            setCalc('max');
                             handleSelect(); // 메모리 유형 변경 시 자동으로 데이터 요청
                         }}
                     >
@@ -127,29 +159,41 @@ function Ranking() {
             )}
 
             {showData && (
+                
                 <div className="ranking-list">
-                    {Object.keys(data).length > 0  ? (
-                        data.map((item, index) => (
+                    
+                    {data.data  ? (
+                        data.data.map((item, index) => (
                             <div key={index} className="ranking-item">
                                 {sortCriteria === 'callCount' ? (
-                                    <p>{`${index + 1}. ${item.uri} - call count: ${item.callCount}`}</p>
+                                    <p>{`${index + 1}. ${item.uri} - call count: ${item.calledNum}`}</p>
                                 ) : (
-                                    <p>{`${index + 1}. ${item.uri} - memory usage: ${memoryType === 'average' ? item.averageMemoryUsage : item.maxMemoryUsage}MB`}</p>
+                                    <p>{`${index + 1}. ${item.uri} - memory usage: ${calc === 'average' ? item.averageMemoryUsage : item.maxMemoryUsage}MB`}</p>
                                 )}
                             </div>
                         ))
                     ) : (
                         <p>No data available for the selected time period.</p>
                     )}
+                {/* 페이지네이션 */}
+                {totalPage > 1 && (
+                        <Pagination
+                            pageCount={totalPage}
+                            onPageChange={handlePageChange}
+                            currentPage={currentPage}
+                        />
+                    )}
                 </div>
             )}
-        </div>
+        </div>)
+        /*
     ); 
     else {
         return (
             <div>no data</div>
         )
     }
+        */
 }
 
 export default Ranking;

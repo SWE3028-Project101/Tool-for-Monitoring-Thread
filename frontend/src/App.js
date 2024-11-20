@@ -15,7 +15,7 @@ function App() {
     try {
       const response = await axios.get("api/mainPage");
       setData(response.data);
-      console.log(response.data);
+      //console.log(response.data);
     } catch (error) {
       console.error("error fetching"); 
     }
@@ -26,7 +26,7 @@ function App() {
 
     // 5초마다 callApi 실행
     const intervalId = setInterval(() => {
-      console.log("fetching data from backend...");
+      //console.log("fetching data from backend...");
       callApi();
     }, 1000);
 
