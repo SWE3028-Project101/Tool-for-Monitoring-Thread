@@ -21,14 +21,12 @@ function fetchApiData() {
     const options = {
         uri: `http://${global.hostName}:${global.portNum}/actuator/metrics/custom.memory.usage`
     };
-    
+
     request(options, function (err, response, body) {
         if (err) {
             console.error('Request error:', err);
             return;
         }
-        console.log('data is ',body);
-        // body가 비어 있는지 확인
         if (!body) {
             console.error('Empty response body');
             transformedData = {};
@@ -131,7 +129,7 @@ app.get('/api/mainPage', (req, res) => {
     try {
         //const data = fs.readFileSync('data.json', 'utf-8');
         //const jsonData = JSON.parse(data); // JSON 문자열을 객체로 변환
-        console.log("send",transformedData);
+        console.log("send", transformedData);
         res.send(transformedData);
     } catch (error) {
         console.error('파일을 읽거나 파싱하는 중 오류가 발생했습니다');
@@ -200,10 +198,14 @@ app.get('/api/rank', (req, res) => {
         const data = fs.readFileSync('data.json', 'utf-8');
         const jsonData = JSON.parse(data); // JSON 문자열을 객체로 변환
         const title = req.query.title
-        const date = req.query.date // 형식은 2024-10-06
-        const time = req.query.time // 형식은 18
-        const calc = req.query.calc // 형식은 18
-        const dateTime = date + "T" + time
+        const startDate = req.query.startDate // 형식은 2024-10-06
+        const startHour = req.query.startHour
+        const endDate = req.query.endDate // 형식은 2024-10-06
+        const endHour = req.query.endHour
+        const calc = req.query.calc
+        const startTime = new Date(`${startDate}T${startHour.toString().padStart(2, '0')}:00:00`);
+        const endTime = new Date(`${endDate}T${endHour.toString().padStart(2, '0')}:00:00`);
+        const page = parseInt(req.query.page, 10) || 1;
 
         if (title === "memoryUsage" && calc === "average") {
             const groupedData = jsonData.reduce((acc, item) => {
@@ -224,7 +226,16 @@ app.get('/api/rank', (req, res) => {
                 averageMemoryUsage: (totalMemoryUsage / count).toFixed(0), // 평균값 계산 및 소수점 제거
             }));
 
-            res.send({data: result});
+            const itemsPerPage = 10;                           // 한 페이지에 표시할 항목 수
+            const totalPage = Math.ceil(result.length / itemsPerPage); // 전체 페이지 수
+            const currentPage = Math.min(page, totalPage);     // 요청한 페이지가 최대 페이지를 초과하지 않도록 제한
+            const startIndex = (currentPage - 1) * itemsPerPage; // 현재 페이지 시작 인덱스
+            const paginatedData = result.slice(startIndex, startIndex + itemsPerPage);
+            res.send({
+                data: paginatedData,  // 현재 페이지의 데이터
+                totalPage,            // 전체 페이지 수
+                currentPage           // 현재 페이지 번호
+            });
 
         } else if (title === "memoryUsage" && calc === "max") {
             const groupedData = jsonData.reduce((acc, item) => {
@@ -245,10 +256,25 @@ app.get('/api/rank', (req, res) => {
                 uri,
                 maxMemoryUsage: maxMemoryUsage.toString() // 숫자를 문자열로 변환
             }));
-            res.send({data: result});
+            const itemsPerPage = 10;                           // 한 페이지에 표시할 항목 수
+            const totalPage = Math.ceil(result.length / itemsPerPage); // 전체 페이지 수
+            const currentPage = Math.min(page, totalPage);     // 요청한 페이지가 최대 페이지를 초과하지 않도록 제한
+            const startIndex = (currentPage - 1) * itemsPerPage; // 현재 페이지 시작 인덱스
+            const paginatedData = result.slice(startIndex, startIndex + itemsPerPage);
+            res.send({
+                data: paginatedData,  // 현재 페이지의 데이터
+                totalPage,            // 전체 페이지 수
+                currentPage           // 현재 페이지 번호
+            });
+
 
         } else if (title === "callCount") {
-            const groupedByDateTime = jsonData.filter(item => item.time.includes(dateTime));
+
+            // 지정된 시간 범위에 포함된 데이터 필터링
+            const groupedByDateTime = jsonData.filter(item => {
+                const itemTime = new Date(item.time); // item.time도 Date 객체로 변환
+                return itemTime >= startTime && itemTime <= endTime;
+            });
 
             const groupedData = groupedByDateTime.reduce((acc, item) => {
                 const uri = item.uri;
@@ -260,9 +286,18 @@ app.get('/api/rank', (req, res) => {
 
                 return acc;
             }, {});
-
             const sortedData = Object.values(groupedData).sort((a, b) => b.calledNum - a.calledNum);
-            res.send({data: sortedData});
+
+            const itemsPerPage = 10;                           // 한 페이지에 표시할 항목 수
+            const totalPage = Math.ceil(sortedData.length / itemsPerPage); // 전체 페이지 수
+            const currentPage = Math.min(page, totalPage);     // 요청한 페이지가 최대 페이지를 초과하지 않도록 제한
+            const startIndex = (currentPage - 1) * itemsPerPage; // 현재 페이지 시작 인덱스
+            const paginatedData = sortedData.slice(startIndex, startIndex + itemsPerPage);
+            res.send({
+                data: paginatedData,  // 현재 페이지의 데이터
+                totalPage,            // 전체 페이지 수
+                currentPage           // 현재 페이지 번호
+            });
         } else {
             res.send("get api parameter를 올바르게 넣어주세요.");
         }
