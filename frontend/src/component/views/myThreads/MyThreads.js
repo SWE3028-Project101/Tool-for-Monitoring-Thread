@@ -30,12 +30,12 @@ function MyThreads({ data }) {
   }
 
   useEffect(() => {
-    console.log("data is :", data);
+    //console.log("data is :", data);
     //console.log("data.data is : ",data.data);
     
     //&& 'data' in data
     if (data!= null && data != undefined && Object.keys(data).length != 0) {
-      console.log('here');
+      //console.log('here');
       const extractedCategories = Array.from(
         new Set(
           data.data.map(item => {
