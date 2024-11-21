@@ -1,9 +1,12 @@
 .category-summary {
-  background-color: #c8e6c9;
+  background-color: #94E8B4;
   padding-top: 10px;
   padding-bottom: 10px;
+  max-width: 800px;
   margin-left: 16px;
   margin-right: 16px;
   line-height: 50%;
   font-size: 14px;
+  border: 2px solid black;
+  border-top: none;
 }
