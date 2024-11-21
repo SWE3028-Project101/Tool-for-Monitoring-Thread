@@ -299,8 +299,11 @@ app.get('/api/rank', (req, res) => {
                 const calledNum = parseFloat(item.calledNum);
 
                 if (!acc[uri]) {
-                    acc[uri] = {uri, calledNum};
+                    acc[uri] = { uri, calledNum: 0 };
                 }
+
+                // 중복된 uri가 있으면 calledNum 증가
+                acc[uri].calledNum += 1;
 
                 return acc;
             }, {});
