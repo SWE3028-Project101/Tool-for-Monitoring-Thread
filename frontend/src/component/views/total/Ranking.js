@@ -14,7 +14,7 @@ function Ranking() {
     const [showData, setShowData] = useState(false);
     const [totalPage, setTotalPage] = useState(0); // 전체 페이지 수 상태 추가
     const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
-    const itemsPerPage = 1; // 페이지당 항목 수
+    const itemsPerPage = 10; // 페이지당 항목 수
 
     const handleSelect = async ( page = 1) => {
         setShowData(true);
