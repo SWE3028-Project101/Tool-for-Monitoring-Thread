@@ -218,7 +218,11 @@ app.get('/api/rank', (req, res) => {
         const page = parseInt(req.query.page, 10) || 1;
 
         if (title === "memoryUsage" && calc === "average") {
-            const groupedData = jsonData.reduce((acc, item) => {
+            const groupedByDateTime = jsonData.filter(item => {
+                const itemTime = new Date(item.time); // item.time도 Date 객체로 변환
+                return itemTime >= startTime && itemTime <= endTime;
+            });
+            const groupedData = groupedByDateTime.reduce((acc, item) => {
                 const uri = item.uri;
                 const memoryUsage = parseFloat(item.memoryUsage);
 
@@ -248,7 +252,11 @@ app.get('/api/rank', (req, res) => {
             });
 
         } else if (title === "memoryUsage" && calc === "max") {
-            const groupedData = jsonData.reduce((acc, item) => {
+            const groupedByDateTime = jsonData.filter(item => {
+                const itemTime = new Date(item.time); // item.time도 Date 객체로 변환
+                return itemTime >= startTime && itemTime <= endTime;
+            });
+            const groupedData = groupedByDateTime.reduce((acc, item) => {
                 const uri = item.uri;
                 const memoryUsage = parseFloat(item.memoryUsage);
 
