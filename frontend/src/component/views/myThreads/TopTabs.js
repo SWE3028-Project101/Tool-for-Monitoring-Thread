@@ -28,6 +28,7 @@ function TopTabs({ data, categories, onCategorySelect }) {
           </button>
         ))}
       </div>
+      <div className="tab-spacer"></div>
       <button className="redirect-button" onClick={goToTotal}>Go to Total</button>
     </div>
   );
