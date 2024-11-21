@@ -150,6 +150,7 @@ app.get('/api', (req, res) => {
             const memoryUsage = parseFloat(req.query.memoryUsage); // memoryUsage 기준 값
             const executionTime = parseFloat(req.query.executionTime);
             const dateTime = date + "T" + time
+            const page = parseInt(req.query.page, 10) || 1;
 
             // searchString과 dateTime을 포함하는 항목만 필터링
             const matchingEntries = [...jsonData].filter(item => item.uri.includes(searchString) && item.time.includes(dateTime));
@@ -163,8 +164,17 @@ app.get('/api', (req, res) => {
             const filteredAndSortedByMemoryUsage = filteredAndSortedByExecutionTime
                 .filter(item => parseFloat(item.memoryUsage) >= memoryUsage)
                 .sort((a, b) => parseFloat(a.memoryUsage) - parseFloat(b.memoryUsage));
-
-            res.send({data: filteredAndSortedByMemoryUsage, number: filteredAndSortedByMemoryUsage.length});
+            const itemsPerPage = 10;                           // 한 페이지에 표시할 항목 수
+            const totalPage = Math.ceil(filteredAndSortedByMemoryUsage.length / itemsPerPage); // 전체 페이지 수
+            const currentPage = Math.min(page, totalPage);     // 요청한 페이지가 최대 페이지를 초과하지 않도록 제한
+            const startIndex = (currentPage - 1) * itemsPerPage; // 현재 페이지 시작 인덱스
+            const paginatedData = filteredAndSortedByMemoryUsage.slice(startIndex, startIndex + itemsPerPage);
+            res.send({
+                data: paginatedData,  // 현재 페이지의 데이터
+                totalPage,            // 전체 페이지 수
+                currentPage,      // 현재 페이지 번호
+                number: filteredAndSortedByMemoryUsage.length
+            });
 
         } catch
             (error) {
@@ -272,7 +282,9 @@ app.get('/api/rank', (req, res) => {
 
             // 지정된 시간 범위에 포함된 데이터 필터링
             const groupedByDateTime = jsonData.filter(item => {
+                console.log("before :",item.time)
                 const itemTime = new Date(item.time); // item.time도 Date 객체로 변환
+                console.log("after :",itemTime)
                 return itemTime >= startTime && itemTime <= endTime;
             });
 
