@@ -282,9 +282,7 @@ app.get('/api/rank', (req, res) => {
 
             // 지정된 시간 범위에 포함된 데이터 필터링
             const groupedByDateTime = jsonData.filter(item => {
-                console.log("before :",item.time)
                 const itemTime = new Date(item.time); // item.time도 Date 객체로 변환
-                console.log("after :",itemTime)
                 return itemTime >= startTime && itemTime <= endTime;
             });
 
