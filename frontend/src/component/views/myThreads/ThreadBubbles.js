@@ -8,7 +8,7 @@ const ThreadBubbles = ({ threads }) => (
         
         <p>{thread.uri}</p>
         <p>{Math.round(thread.memoryUsage/1_000_000)} MB</p>
-        <p>{thread.executionTime} ms</p>
+        <p>{thread.executionTime} </p>
       </div>
     ))}
   </div>

@@ -3,74 +3,68 @@ import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './Ranking.css';
-import Pagination from "./Pagination";
+import Pagination from './Pagination';
 
 function Ranking() {
-    let [data, setData] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(new Date());
-    const [selectedHour, setSelectedHour] = useState("00");
+    const [data, setData] = useState([]);
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
+    const [startHour, setStartHour] = useState('00');
+    const [endHour, setEndHour] = useState('23');
     const [calc, setCalc] = useState('average');
     const [sortCriteria, setSortCriteria] = useState('callCount');
+    const [showDatePicker, setShowDatePicker] = useState(false); // Memory Usage DatePicker 표시 여부
     const [showData, setShowData] = useState(false);
     const [totalPage, setTotalPage] = useState(0); // 전체 페이지 수 상태 추가
     const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
     const itemsPerPage = 10; // 페이지당 항목 수
 
-    const handleSelect = async ( page = 1) => {
-        setShowData(true);
-
-        // 날짜 및 시간 포맷팅
-        const date = selectedDate.toISOString().split('T')[0]; // yyyy-mm-dd
-        const time = sortCriteria === 'callCount' ? selectedHour : null;
-
+    const handleSelect = async (page = 1) => {
+        console.log('Fetching data...');
+        
+        
+        const formattedStartDate = `${startDate.toISOString().split('T')[0]}`
+        const formattedStartHour = `${startHour}`;
+        const formattedEndDate = `${endDate.toISOString().split('T')[0]}`;
+        const formattedEndHour = `${endHour}`;
+        console.log('startDate' , formattedStartDate);
         try {
-            // 백엔드로부터 필터링된 데이터 가져오기
             const response = await axios.get('api/rank', {
                 params: {
-                    date,
-                    time, // Call Count의 경우 시간 값만 전달
-                    calc: sortCriteria === 'memoryUsage' ? calc : null,
+                    startDate: formattedStartDate,
+                    endDate: formattedEndDate,
+                    startHour : formattedStartHour,
+                    endHour : formattedEndHour,
+                    calc,
                     title: sortCriteria,
-                    page : page
+                    page,
                 },
             });
-            console.log('ranking data is ',response.data);
 
-            if (Object.keys(response.data).length === 0) {
-                setData([]);
-                setTotalPage(0); // 데이터가 없을 경우 페이지 수를 0으로 설정
-            } else {
+            console.log('API Response:', response.data);
+
+            if (response.data && response.data.data) {
                 setData(response.data.data);
-                setTotalPage(response.data.totalPage); // 백엔드에서 받은 totalPage 설정
-            }
-
-            if(Object.keys(response.data).length == 0){
-                setData([]);
+                setTotalPage(response.data.totalPage || 1);
+                setShowData(true);
             } else {
-            setData(response.data);
+                setData([]);
+                setTotalPage(0);
+                setShowData(true); // 데이터가 없을 때도 문구 출력
             }
         } catch (error) {
             console.error('Error fetching data:', error);
+            setData([]);
+            setShowData(true); // 에러 발생 시에도 문구 출력
         }
     };
-    //console.log('data in summary ', data);
-  //  if(Object.keys(data).length != 0)
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data.data ? data.data.slice(indexOfFirstItem, indexOfLastItem) : [];
-    const pageCount = data.data ? Math.ceil(data.data.length / itemsPerPage) : 0;
-    
-    
-    
-    
-    const handlePageChange = (selectedPage) => {
-        
-        console.log('page change to : ',selectedPage.selected);
-        setCurrentPage(selectedPage.selected + 1);
-        handleSelect = (selectedPage.selected + 1); // 페이지 변경 시 데이터 요청
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        handleSelect(page);
     };
 
-        return (
+    return (
         <div className="ranking-container">
             <div className="ranking-tabs">
                 <button
@@ -95,25 +89,20 @@ function Ranking() {
                 </button>
             </div>
 
+            {/* Call Count Section */}
             {sortCriteria === 'callCount' && (
                 <div className="date-picker">
-                    <label>Select Date:</label>
+                    <label>Start Date:</label>
                     <DatePicker
-                        selected={selectedDate}
-                        onChange={(date) => {
-                            setSelectedDate(date);
-                            handleSelect(); // 날짜 변경 시 자동으로 데이터 요청
-                        }}
+                        selected={startDate}
+                        onChange={(date) => setStartDate(date)}
                         dateFormat="yyyy-MM-dd"
                         showTimeSelect={false}
                     />
-                    <label>Select Hour:</label>
+                    <label>Start Hour:</label>
                     <select
-                        value={selectedHour}
-                        onChange={(e) => {
-                            setSelectedHour(e.target.value);
-                            handleSelect(); // 시간 변경 시 자동으로 데이터 요청
-                        }}
+                        value={startHour}
+                        onChange={(e) => setStartHour(e.target.value)}
                     >
                         {[...Array(24)].map((_, index) => {
                             const hour = index < 10 ? `0${index}` : index;
@@ -122,16 +111,37 @@ function Ranking() {
                             );
                         })}
                     </select>
+                    <label>End Date:</label>
+                    <DatePicker
+                        selected={endDate}
+                        onChange={(date) => setEndDate(date)}
+                        dateFormat="yyyy-MM-dd"
+                        showTimeSelect={false}
+                    />
+                    <label>End Hour:</label>
+                    <select
+                        value={endHour}
+                        onChange={(e) => setEndHour(e.target.value)}
+                    >
+                        {[...Array(24)].map((_, index) => {
+                            const hour = index < 10 ? `0${index}` : index;
+                            return (
+                                <option key={index} value={hour}>{hour}</option>
+                            );
+                        })}
+                    </select>
+                    <button onClick={() => handleSelect(currentPage)}>Select</button>
                 </div>
             )}
 
+            {/* Memory Usage Section */}
             {sortCriteria === 'memoryUsage' && (
                 <div className="memory-type-selector">
                     <button
                         className={`memory-type-btn ${calc === 'average' ? 'active' : ''}`}
                         onClick={() => {
                             setCalc('average');
-                            handleSelect(); // 메모리 유형 변경 시 자동으로 데이터 요청
+                            handleSelect();
                         }}
                     >
                         Average
@@ -140,45 +150,48 @@ function Ranking() {
                         className={`memory-type-btn ${calc === 'max' ? 'active' : ''}`}
                         onClick={() => {
                             setCalc('max');
-                            handleSelect(); // 메모리 유형 변경 시 자동으로 데이터 요청
+                            handleSelect();
                         }}
                     >
                         Max
                     </button>
-                    
-                    <div className="date-picker memory-usage-date-picker">
+                    <button
+                        className="date-picker-button"
+                        onClick={() => setShowDatePicker(!showDatePicker)}
+                    >
+                        Select Date
+                    </button>
+                    {showDatePicker && (
                         <DatePicker
-                            selected={selectedDate}
+                            selected={startDate}
                             onChange={(date) => {
-                                setSelectedDate(date);
-                                handleSelect(); // 날짜 변경 시 자동으로 데이터 요청
+                                setStartDate(date);
+                                setShowDatePicker(false);
+                                handleSelect();
                             }}
-                            dateFormat="yyyy-MM-dd"
-                            showTimeSelect={false}
+                            inline
                         />
-                    </div>
+                    )}
                 </div>
             )}
 
+            {/* Data Display */}
             {showData && (
-                
                 <div className="ranking-list">
-                    
-                    {data.data  ? (
-                        data.data.map((item, index) => (
+                    {data.length > 0 ? (
+                        data.map((item, index) => (
                             <div key={index} className="ranking-item">
                                 {sortCriteria === 'callCount' ? (
                                     <p>{`${index + 1}. ${item.uri} - call count: ${item.calledNum}`}</p>
                                 ) : (
-                                    <p>{`${index + 1}. ${item.uri} - memory usage: ${calc === 'average' ? item.averageMemoryUsage : item.maxMemoryUsage}MB`}</p>
+                                    <p>{`${index + 1}. ${item.uri} - memory usage: ${calc === 'average' ? item.averageMemoryUsage : item.maxMemoryUsage}B`}</p>
                                 )}
                             </div>
                         ))
                     ) : (
                         <p>No data available for the selected time period.</p>
                     )}
-                {/* 페이지네이션 */}
-                {totalPage > 1 && (
+                    {totalPage > 1 && (
                         <Pagination
                             pageCount={totalPage}
                             onPageChange={handlePageChange}
@@ -187,15 +200,8 @@ function Ranking() {
                     )}
                 </div>
             )}
-        </div>)
-        /*
-    ); 
-    else {
-        return (
-            <div>no data</div>
-        )
-    }
-        */
+        </div>
+    );
 }
 
 export default Ranking;
