@@ -63,9 +63,11 @@ function Ranking() {
     
     
     
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-        handleSelect(page); // 페이지 변경 시 데이터 요청
+    const handlePageChange = (selectedPage) => {
+        
+        console.log('page change to : ',selectedPage.selected);
+        setCurrentPage(selectedPage.selected + 1);
+        handleSelect = (selectedPage.selected + 1); // 페이지 변경 시 데이터 요청
     };
 
         return (

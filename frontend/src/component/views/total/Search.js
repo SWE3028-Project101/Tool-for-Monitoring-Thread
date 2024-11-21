@@ -16,8 +16,9 @@ function Search() {
     const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
     const itemsPerPage = 10; // 페이지당 항목 수
 
-    const handleSearch = async () => {
+    const handleSearch = async (page = 0) => {
         const date = selectedDate.toISOString().split('T')[0]; // yyyy-mm-dd 형식
+        console.log(page);
         try {
             const response = await axios.get('api', {
                 params: {
@@ -26,6 +27,7 @@ function Search() {
                     memoryUsage,
                     date,
                     time: selectedHour,
+                    page : page
                 },
             });
             if (Object.keys(response.data).length === 0) {
@@ -36,6 +38,8 @@ function Search() {
             } else {
                 //console.log('1: ',response.data.data);
                 //console.log('2: ',response.data.data.length);
+                //console.log('totalPage : ',response.data.totalPage);
+               
                 setTotalPage(response.data.totalPage); // 백엔드에서 받은 totalPage 설정
                 setResults(response.data.data);
                 setDataCount(response.data.data.length);
@@ -48,8 +52,15 @@ function Search() {
         }
     };
    // console.log('result is ',results);
-    //console.log('result.data', results.data);
-  
+    //console.log('result.data', results);
+    const handlePageChange = (selectedPage) => {
+        
+        console.log('page change to : ',selectedPage.selected);
+        
+        setCurrentPage(selectedPage.selected + 1);
+        handleSearch(selectedPage.selected + 1); // 페이지 변경 시 데이터 요청
+    };
+
     return (
         <div className="search-container">
             <div className="search-input">
@@ -111,8 +122,8 @@ function Search() {
             </div>
 
             <div className="results-container">
-                {results.data ? (
-                    results.data.map((item, index) => (
+                {results ? (
+                    results.map((item, index) => (
                         <div key={index} className="result-item">
                             {`${index + 1}. ${item.uri} - memory usage: ${item.memoryUsage}MB, thread time: ${item.threadTime}ms`}
                         </div>
@@ -120,6 +131,14 @@ function Search() {
                 ) : (
                     <p>No data available</p>
                 )}
+                {/* 페이지네이션 */}
+                {totalPage > 1 && (
+                        <Pagination
+                            pageCount={totalPage}
+                            onPageChange={handlePageChange}
+                            currentPage={currentPage}
+                        />
+                    )}
                 <div className="data-count">
                     Data number: {dataCount}
                 </div>
