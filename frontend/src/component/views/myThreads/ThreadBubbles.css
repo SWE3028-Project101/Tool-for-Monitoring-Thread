@@ -4,8 +4,11 @@
   gap: 50px;
   padding: 20px 0;
   max-height: 300px;
+  max-width: 800px;
+  border-left: 2px solid black;
+  border-right: 2px solid black;
   justify-content: center;
-  background-color: #f8f8f8;
+  background-color: #E5FAED;
   margin-left: 16px;
   margin-right: 16px;
   overflow-y: auto;
@@ -19,7 +22,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: black;
+  color: white;
   font-size: 10px;
   font-weight: bold;
   text-align: center;
@@ -31,5 +34,5 @@
   font-size: 12px;
 }
 
-.noerror { background-color: #99f691;}
-.yeserror { background-color: #ff7070;}
+.noerror { background-color: #8DB600;}
+.yeserror { background-color: #FF004F;}
