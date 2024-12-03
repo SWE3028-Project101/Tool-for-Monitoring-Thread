@@ -40,6 +40,8 @@ function fetchApiData() {
             console.error('JSON parsing error:', parseError);
             return;
         }
+        //console.log(resBody.availableTags);
+
 
         transformedData = {
             data: resBody.availableTags.find(tag => tag.tag === "requestNum")?.values.map((requestNumValue) => {
@@ -75,7 +77,7 @@ function fetchApiData() {
                 };
             })
         };
-
+        //console.log(transformedData);
         const updateCalledNumConsistently = (dataArray) => {
             // Count occurrences of each unique URI
             const uriCountMap = {};
@@ -98,7 +100,7 @@ function fetchApiData() {
         };
 
         fs.writeFileSync('data.json', JSON.stringify(updateCalledNumConsistently(transformedData.data), null, 2), 'utf-8');
-        console.log('Data saved to data.json');
+        //console.log('Data saved to data.json');
     })
 }
 
@@ -141,9 +143,9 @@ app.get('/api/mainPage', (req, res) => {
 app.get('/api', (req, res) => {
 
         try {
-            const data = fs.readFileSync('data.json', 'utf-8');
+            const data = fs.readFileSync('data1.json', 'utf-8');
             const jsonData = JSON.parse(data); // JSON 문자열을 객체로 변환
-
+            
             const searchString = req.query.search
             const date = req.query.date // 형식은 2024-10-06
             const time = req.query.time // 형식은 18
@@ -154,7 +156,7 @@ app.get('/api', (req, res) => {
 
             // searchString과 dateTime을 포함하는 항목만 필터링
             const matchingEntries = [...jsonData].filter(item => item.uri.includes(searchString) && item.time.includes(dateTime));
-            console.log(matchingEntries);
+            //console.log(matchingEntries);
             // executionTime이 기준 이상인 항목 필터링 후 오름차순 정렬
             const filteredAndSortedByExecutionTime = matchingEntries
                 .filter(item => parseFloat(item.executionTime.replace('ms', '')) >= executionTime)
@@ -284,15 +286,15 @@ app.get('/api/rank', (req, res) => {
 
             // 지정된 시간 범위에 포함된 데이터 필터링
             
-            console.log(startTime);
-            console.log(endTime);
+            //console.log(startTime);
+            //console.log(endTime);
             const groupedByDateTime = jsonData.filter(item => {
-                console.log(item.time);
+                //console.log(item.time);
                 const itemTime = new Date(item.time); // item.time도 Date 객체로 변환
-                console.log(itemTime);
+                //console.log(itemTime);
                 return itemTime >= startTime && itemTime <= endTime;
             });
-            console.log(groupedByDateTime);
+            //console.log(groupedByDateTime);
 
             const groupedData = groupedByDateTime.reduce((acc, item) => {
                 const uri = item.uri;

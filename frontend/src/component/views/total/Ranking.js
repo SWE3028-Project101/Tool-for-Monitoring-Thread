@@ -20,14 +20,12 @@ function Ranking() {
     const itemsPerPage = 10; // 페이지당 항목 수
 
     const handleSelect = async (page = 1) => {
-        console.log('Fetching data...');
-        
         
         const formattedStartDate = `${startDate.toISOString().split('T')[0]}`
         const formattedStartHour = `${startHour}`;
         const formattedEndDate = `${endDate.toISOString().split('T')[0]}`;
         const formattedEndHour = `${endHour}`;
-        console.log('startDate' , formattedStartDate);
+        
         try {
             const response = await axios.get('api/rank', {
                 params: {

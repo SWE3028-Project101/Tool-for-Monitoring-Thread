@@ -30,17 +30,22 @@ function MyThreads({ data }) {
   }
 
   useEffect(() => {
-    //console.log("data is :", data);
+    
     //console.log("data.data is : ",data.data);
     
     //&& 'data' in data
     if (data!= null && data != undefined && Object.keys(data).length != 0) {
       //console.log('here');
+   
+      console.log('data is ',data.data);
       const extractedCategories = Array.from(
         new Set(
           data.data.map(item => {
+            console.log(item);
+            if (item.uri != null ) {
             const category = `/${item.uri.split('/')[1] || ''}`;
             return category === '/' ? '/' : `/${item.uri.split('/')[1]}`;
+            }
           })
         )
       ).filter(Boolean);
@@ -49,7 +54,8 @@ function MyThreads({ data }) {
      
       const groupedData = extractedCategories.reduce((acc, category) => {
         acc[category] = data.data.filter(item => {
-          return category === '/' ? item.uri === '/' : item.uri.startsWith(category);
+          if(item.uri != null)
+            return category === '/' ? item.uri === '/' : item.uri.startsWith(category);
         });
         return acc;
       }, {});
@@ -76,15 +82,18 @@ function MyThreads({ data }) {
       const extractedErrorCategory = Array.from(
         new Set(
           errorData.map(item => {
+            if(item.uri != null) {
             const errorcategory = `/${item.uri.split('/')[1] || ''}`;
             return errorcategory === '/' ? '/' : `/${item.uri.split('/')[1]}`;
+            }
           })
         )
       ).filter(Boolean);
 
       const groupedErrorData = extractedErrorCategory.reduce((acc, category) => {
         acc[category] = errorData.filter(item => {
-          return category === '/' ? item.uri === '/' : item.uri.startsWith(category);
+          if(item.uri != null)
+            return category === '/' ? item.uri === '/' : item.uri.startsWith(category);
         });
         return acc;
       }, {});

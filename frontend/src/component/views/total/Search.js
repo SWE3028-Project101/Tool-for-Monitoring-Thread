@@ -125,7 +125,7 @@ function Search() {
                 {results ? (
                     results.map((item, index) => (
                         <div key={index} className="result-item">
-                            {`${index + 1}. ${item.uri} - memory usage: ${item.memoryUsage}MB, thread time: ${item.threadTime}ms`}
+                            {`${index + 1}. ${item.uri} - Memory Usage: ${item.memoryUsage}B, Execution Time: ${item.executionTime}`}
                         </div>
                     ))
                 ) : (
