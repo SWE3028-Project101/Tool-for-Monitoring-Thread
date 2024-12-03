@@ -55,7 +55,7 @@ function Search() {
                     />
                 </div>
                 <div className="filter">
-                    <label>Memory Usage (MB):</label>
+                    <label>Memory Usage (Byte):</label>
                     <input
                         type="number"
                         value={memoryUsage}
