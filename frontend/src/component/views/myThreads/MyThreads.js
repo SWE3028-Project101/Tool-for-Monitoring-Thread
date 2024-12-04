@@ -114,7 +114,8 @@ function MyThreads({ data }) {
   };
 
   const selectedCategoryData = categoryData[selectedCategory] || [];
-  //console.log("selected categoryData: ", selectedCategoryData);
+  console.log("selected categoryData: ", selectedCategoryData);
+  console.log("data",data);
   const selectedErrorCategoryData = errorCategoryData[selectedErrorCategory] || [];
 
   const largestMemory = (category) => {
@@ -152,7 +153,7 @@ function MyThreads({ data }) {
         />
       )}
 
-      {selectedCategoryData.length > 0 ? (
+      {(selectedCategoryData.length > 0 && data!= null && data != undefined && Object.keys(data).length != 0 ) ? (
         <>
           <CategorySummary
             category={selectedCategory}
