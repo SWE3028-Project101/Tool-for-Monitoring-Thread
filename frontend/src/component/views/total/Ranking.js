@@ -13,21 +13,18 @@ function Ranking() {
     const [endHour, setEndHour] = useState('23');
     const [calc, setCalc] = useState('average');
     const [sortCriteria, setSortCriteria] = useState('callCount');
-    const [showDatePicker, setShowDatePicker] = useState(false); // Memory Usage DatePicker 표시 여부
     const [showData, setShowData] = useState(false);
     const [totalPage, setTotalPage] = useState(0); // 전체 페이지 수 상태 추가
     const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
     const itemsPerPage = 10; // 페이지당 항목 수
 
     const handleSelect = async (page = 1) => {
-        console.log('Fetching data...');
-        
         
         const formattedStartDate = `${startDate.toISOString().split('T')[0]}`
         const formattedStartHour = `${startHour}`;
         const formattedEndDate = `${endDate.toISOString().split('T')[0]}`;
         const formattedEndHour = `${endHour}`;
-        console.log('startDate' , formattedStartDate);
+        
         try {
             const response = await axios.get('api/rank', {
                 params: {
@@ -50,12 +47,12 @@ function Ranking() {
             } else {
                 setData([]);
                 setTotalPage(0);
-                setShowData(true); // 데이터가 없을 때도 문구 출력
+                setShowData(true);
             }
         } catch (error) {
             console.error('Error fetching data:', error);
             setData([]);
-            setShowData(true); // 에러 발생 시에도 문구 출력
+            setShowData(true);
         }
     };
 
@@ -82,59 +79,57 @@ function Ranking() {
                     onClick={() => {
                         setSortCriteria('memoryUsage');
                         setCalc('average');
-                        setShowData(true);
+                        setShowData(false);
                     }}
                 >
                     Memory Usage Ranking
                 </button>
             </div>
 
-            {/* Call Count Section */}
-            {sortCriteria === 'callCount' && (
-                <div className="date-picker">
-                    <label>Start Date:</label>
-                    <DatePicker
-                        selected={startDate}
-                        onChange={(date) => setStartDate(date)}
-                        dateFormat="yyyy-MM-dd"
-                        showTimeSelect={false}
-                    />
-                    <label>Start Hour:</label>
-                    <select
-                        value={startHour}
-                        onChange={(e) => setStartHour(e.target.value)}
-                    >
-                        {[...Array(24)].map((_, index) => {
-                            const hour = index < 10 ? `0${index}` : index;
-                            return (
-                                <option key={index} value={hour}>{hour}</option>
-                            );
-                        })}
-                    </select>
-                    <label>End Date:</label>
-                    <DatePicker
-                        selected={endDate}
-                        onChange={(date) => setEndDate(date)}
-                        dateFormat="yyyy-MM-dd"
-                        showTimeSelect={false}
-                    />
-                    <label>End Hour:</label>
-                    <select
-                        value={endHour}
-                        onChange={(e) => setEndHour(e.target.value)}
-                    >
-                        {[...Array(24)].map((_, index) => {
-                            const hour = index < 10 ? `0${index}` : index;
-                            return (
-                                <option key={index} value={hour}>{hour}</option>
-                            );
-                        })}
-                    </select>
-                    <button onClick={() => handleSelect(currentPage)}>Select</button>
-                </div>
-            )}
+            {/* 공통 DatePicker Section */}
+            <div className="date-picker">
+                <label>Start Date:</label>
+                <DatePicker
+                    selected={startDate}
+                    onChange={(date) => setStartDate(date)}
+                    dateFormat="yyyy-MM-dd"
+                    showTimeSelect={false}
+                />
+                <label>Start Hour:</label>
+                <select
+                    value={startHour}
+                    onChange={(e) => setStartHour(e.target.value)}
+                >
+                    {[...Array(24)].map((_, index) => {
+                        const hour = index < 10 ? `0${index}` : index;
+                        return (
+                            <option key={index} value={hour}>{hour}</option>
+                        );
+                    })}
+                </select>
+                <label>End Date:</label>
+                <DatePicker
+                    selected={endDate}
+                    onChange={(date) => setEndDate(date)}
+                    dateFormat="yyyy-MM-dd"
+                    showTimeSelect={false}
+                />
+                <label>End Hour:</label>
+                <select
+                    value={endHour}
+                    onChange={(e) => setEndHour(e.target.value)}
+                >
+                    {[...Array(24)].map((_, index) => {
+                        const hour = index < 10 ? `0${index}` : index;
+                        return (
+                            <option key={index} value={hour}>{hour}</option>
+                        );
+                    })}
+                </select>
+                <button onClick={() => handleSelect(currentPage)}>Select</button>
+            </div>
 
-            {/* Memory Usage Section */}
+            {/* Memory Usage Section 추가 버튼 */}
             {sortCriteria === 'memoryUsage' && (
                 <div className="memory-type-selector">
                     <button
@@ -155,23 +150,6 @@ function Ranking() {
                     >
                         Max
                     </button>
-                    <button
-                        className="date-picker-button"
-                        onClick={() => setShowDatePicker(!showDatePicker)}
-                    >
-                        Select Date
-                    </button>
-                    {showDatePicker && (
-                        <DatePicker
-                            selected={startDate}
-                            onChange={(date) => {
-                                setStartDate(date);
-                                setShowDatePicker(false);
-                                handleSelect();
-                            }}
-                            inline
-                        />
-                    )}
                 </div>
             )}
 

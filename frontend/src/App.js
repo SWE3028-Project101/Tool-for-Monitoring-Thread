@@ -24,7 +24,7 @@ function App() {
     // 처음에 한 번 실행
     //callApi();
 
-    // 5초마다 callApi 실행
+    // 1초마다 callApi 실행
     const intervalId = setInterval(() => {
       //console.log("fetching data from backend...");
       callApi();

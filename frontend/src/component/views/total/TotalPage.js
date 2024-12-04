@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import State from './State';
+import { useNavigate } from 'react-router-dom'; // Navigation 기능 추가
 import Ranking from './Ranking';
 import Search from './Search';
 import './TotalPage.css';
 
 function TotalPage() {
     const [activeTab, setActiveTab] = useState('ranking');
+    const navigate = useNavigate(); // Navigation hook
 
     const renderContent = () => {
         switch (activeTab) {
@@ -13,8 +14,6 @@ function TotalPage() {
                 return <Search />;
             case 'ranking':
                 return <Ranking />;
-            case 'state':
-                return <State />;
             default:
                 return null;
         }
@@ -22,10 +21,20 @@ function TotalPage() {
 
     return (
         <div className="total-page">
+            <button className="back-button" onClick={() => navigate('/MyThreads')}>Back to Main</button>
             <div className="tab-container">
-                <button className={`tab ${activeTab === 'search' ? 'active' : ''}`} onClick={() => setActiveTab('search')}>Search</button>
-                <button className={`tab ${activeTab === 'ranking' ? 'active' : ''}`} onClick={() => setActiveTab('ranking')}>Ranking</button>
-                <button className={`tab ${activeTab === 'state' ? 'active' : ''}`} onClick={() => setActiveTab('state')}>State</button>
+                <button
+                    className={`tab ${activeTab === 'search' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('search')}
+                >
+                    Search
+                </button>
+                <button
+                    className={`tab ${activeTab === 'ranking' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('ranking')}
+                >
+                    Ranking
+                </button>
             </div>
             <div className="content-container">
                 {renderContent()}

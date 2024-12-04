@@ -1,36 +1,67 @@
 .total-page {
-  padding: 20px;
-  background-color: #f5f5f5;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 컨텐츠를 수평 중앙 정렬 */
+  background-color: #d8f3dc; /* 피그마 배경색 */
+  min-height: 100vh; /* 화면 높이를 100%로 설정 */
+  padding: 30px;
+  position: relative; /* Back to Main 버튼 위치 조정 가능 */
 }
 
+/* Back to Main 버튼 */
+.back-button {
+  position: absolute;
+  top: 20px; /* 화면 위쪽 여백 */
+  right: 20px; /* 컨테이너 오른쪽에 붙임 */
+  padding: 10px 20px;
+  background-color: #e63946; /* 피그마 'Back to Main' 색상 */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.back-button:hover {
+  background-color: #d62828; /* 호버 시 색상 */
+}
+
+/* Tab 컨테이너 */
 .tab-container {
   display: flex;
-  justify-content: center;
+  justify-content: center; /* 탭 버튼을 중앙 정렬 */
+  gap: 10px; /* 버튼 간격 */
   margin-bottom: 20px;
 }
 
 .tab {
-  padding: 10px 20px;
-  margin: 0 5px;
-  background-color: #4CAF50;
+  padding: 10px 40px; /* 버튼 크기 조정 */
+  border-radius: 10px; /* 버튼 모서리를 둥글게 */
+  background-color: #457b9d; /* 피그마 버튼 색상 */
   color: white;
   border: none;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.tab:hover {
+  background-color: #1d3557; /* 호버 시 색상 변경 */
 }
 
 .tab.active {
-  background-color: #3e8e41;
+  background-color: #1d3557; /* 활성 탭 색상 */
 }
 
+/* Content 컨테이너 */
 .content-container {
   background-color: #ffffff;
-  padding: 20px;
-  border-radius: 8px;
+  padding: 30px;
+  border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.content {
-  font-size: 18px;
+  width: 80%; /* 컨텐츠 영역 너비 */
+  max-width: 1200px; /* 최대 너비 제한 */
+  margin: 0 auto; /* 좌우 중앙 정렬 */
 }
