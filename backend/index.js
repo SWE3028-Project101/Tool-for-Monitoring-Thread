@@ -45,8 +45,6 @@ function fetchApiData() {
 
         transformedData = {
             data: resBody.availableTags.find(tag => tag.tag === "requestNum")?.values.map((requestNumValue) => {
-                const index = parseInt(requestNumValue) - 1; // 1-based index for `requestNum`
-
                 const getValueBySuffix = (tag, suffix) => {
                     const tagData = resBody.availableTags.find(t => t.tag === tag);
                     const matchingValue = tagData?.values.find(value => value.endsWith(`-${suffix}`));
@@ -54,7 +52,7 @@ function fetchApiData() {
                 };
 
                 // Suffix for URI
-                const uriWithSuffix = resBody.availableTags.find(tag => tag.tag === "uri")?.values[index];
+                const uriWithSuffix = resBody.availableTags.find(tag => tag.tag === "uri")?.values.find(item => item.endsWith("-"+requestNumValue));
                 const suffix = uriWithSuffix?.split('-').pop();
 
                 // Extract values based on suffix
@@ -220,7 +218,11 @@ app.get('/api/rank', (req, res) => {
         const page = parseInt(req.query.page, 10) || 1;
 
         if (title === "memoryUsage" && calc === "average") {
-            const groupedData = jsonData.reduce((acc, item) => {
+            const groupedByDateTime = jsonData.filter(item => {
+                const itemTime = new Date(item.time); // item.time도 Date 객체로 변환
+                return itemTime >= startTime && itemTime <= endTime;
+            });
+            const groupedData = groupedByDateTime.reduce((acc, item) => {
                 const uri = item.uri;
                 const memoryUsage = parseFloat(item.memoryUsage);
 
@@ -251,7 +253,11 @@ app.get('/api/rank', (req, res) => {
             });
 
         } else if (title === "memoryUsage" && calc === "max") {
-            const groupedData = jsonData.reduce((acc, item) => {
+            const groupedByDateTime = jsonData.filter(item => {
+                const itemTime = new Date(item.time); // item.time도 Date 객체로 변환
+                return itemTime >= startTime && itemTime <= endTime;
+            });
+            const groupedData = groupedByDateTime.reduce((acc, item) => {
                 const uri = item.uri;
                 const memoryUsage = parseFloat(item.memoryUsage);
 
