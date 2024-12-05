@@ -13,29 +13,31 @@
   display: flex;
   justify-content: space-around;
   margin-bottom: 20px;
+  gap: 10px; /* 버튼 간격 */
 }
 
 .ranking-tab {
-  padding: 12px 24px;
+  flex: 1; /* 버튼이 동일한 크기 */
+  padding: 10px 30px;
   cursor: pointer;
-  background-color: #ffffff; /* 흰색 배경 */
-  border: 2px solid #007bff; /* 파란색 테두리 */
-  border-radius: 50px; /* 둥근 버튼 */
+  background-color: #ffffff; /* 기본 흰색 배경 */
+  border: 2px solid #000000; /* 검정색 테두리 */
+  border-radius: 5px; /* 약간의 둥근 모서리 */
   font-size: 16px;
   font-weight: bold;
-  color: #007bff;
+  color: #000000;
+  text-align: center;
   transition: all 0.3s ease-in-out;
 }
 
-.ranking-tab:hover {
-  background-color: #007bff; /* 호버 시 배경 색상 */
-  color: white; /* 호버 시 텍스트 색상 */
+.ranking-tab.active {
+  background-color: #1e3d2f; /* 활성화된 탭 색상 */
+  color: white;
+  border: 2px solid #0056b3;
 }
 
-.ranking-tab.active {
-  background-color: #007bff; /* 활성화된 탭 색상 */
-  color: white;
-  border: 2px solid #0056b3; /* 활성화된 탭의 테두리 색상 */
+.ranking-tab:hover {
+  background-color: #8dffe2; /* 호버 시 색상 */
 }
 
 /* Memory Type Selector (Average / Max) */
@@ -44,90 +46,81 @@
   justify-content: center;
   align-items: center;
   margin-top: 20px;
-  gap: 10px;
+  gap: 15px; /* 버튼 간격 */
 }
 
 .memory-type-btn {
-  padding: 12px 36px; /* 버튼의 폭을 더 넓게 */
+  padding: 12px 36px;
   cursor: pointer;
-  background-color: #f1f3f5;
+  background-color: #ffffff; /* 비활성 상태 */
   border: 2px solid #ccc;
-  border-radius: 30px;
-  font-size: 16px; /* 폰트 크기를 키워서 더 눈에 띄게 */
+  border-radius: 5px;
+  font-size: 16px;
   font-weight: bold;
   color: #333;
   transition: all 0.3s ease-in-out;
-  height: 48px; /* 높이를 DatePicker와 맞추기 */
-}
-
-.memory-type-btn:hover {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
 }
 
 .memory-type-btn.active {
-  background-color: #007bff;
+  background-color: #2ecc71; /* 활성화된 버튼 색상 */
   color: white;
-  border: 2px solid #0056b3;
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+  border: 2px solid #27ae60;
 }
 
-/* Select Date Button */
-.date-picker-button {
-  padding: 12px 24px;
-  background-color: #f1f3f5; /* 부드러운 회색 배경 */
-  color: #007bff; /* 파란색 텍스트 */
-  border: 2px solid #ccc; /* 회색 테두리 */
-  border-radius: 30px; /* 둥근 모서리 */
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.memory-type-btn:hover {
+  background-color: #8dffe2; /* 호버 시 색상 */
 }
 
-.date-picker-button:hover {
-  background-color: #007bff;
-  color: white;
-  border-color: #0056b3;
-  box-shadow: 0 6px 10px rgba(0, 123, 255, 0.2);
-}
-
-.date-picker-button:active {
-  transform: translateY(2px);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-}
-
-/* DatePicker and Hour Selector */
+/* DatePicker Section Layout */
 .date-picker {
-  margin-top: 20px;
   display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* 각 요소 간격 */
   justify-content: space-between;
-  align-items: center;
+  margin-bottom: 20px;
 }
 
-.date-picker select,
-.date-picker input {
-  padding: 8px 16px;
-  margin: 5px 10px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
+.filter {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter label {
   font-size: 14px;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px; /* 레이블과 입력 간격 */
 }
 
-.date-picker button {
-  padding: 10px 20px;
+.filter input,
+.filter select {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+}
+
+/* Search Button */
+.search-button {
+  text-align: center;
+  margin-top: 20px;
+  width: 100%; /* 버튼이 전체 크기를 차지 */
+}
+
+.select-btn {
   background-color: #007bff;
   color: white;
   border: none;
+  padding: 12px 36px;
   border-radius: 8px;
-  font-size: 16px;
   cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
   transition: background-color 0.3s ease;
 }
 
-.date-picker button:hover {
+.select-btn:hover {
   background-color: #0056b3;
 }
 
@@ -137,8 +130,8 @@
 }
 
 .ranking-item {
-  background-color: #00c5a4;
-  color: white;
+  background-color: #eaf9f4; /* 밝은 초록 배경 */
+  color: #333;
   padding: 15px;
   border-radius: 10px;
   margin-bottom: 15px;
@@ -149,7 +142,8 @@
 }
 
 .ranking-item:hover {
-  transform: translateY(-5px); /* 항목 마우스 오버 시 살짝 위로 이동 */
+  transform: translateY(-5px); /* 마우스 오버 시 위로 이동 */
+  background-color: #cdece4;
 }
 
 /* Responsive Design */
@@ -173,5 +167,11 @@
 
   .ranking-item {
     font-size: 14px;
+  }
+
+  .memory-type-selector {
+    flex-wrap: wrap; /* 작은 화면에서 줄 바꿈 */
+    justify-content: center;
+    gap: 10px;
   }
 }

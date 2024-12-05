@@ -14,19 +14,24 @@ function Ranking() {
     const [calc, setCalc] = useState('average');
     const [sortCriteria, setSortCriteria] = useState('callCount');
     const [showData, setShowData] = useState(false);
-    const [totalPage, setTotalPage] = useState(0);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(0); // 전체 페이지 수 상태 추가
+    const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
+    const itemsPerPage = 10; // 페이지당 항목 수
 
     const handleSelect = async (page = 1) => {
-        console.log('Fetching data...');
-        const start = `${startDate.toISOString().split('T')[0]}T${startHour}:00:00`;
-        const end = `${endDate.toISOString().split('T')[0]}T${endHour}:00:00`;
-
+        
+        const formattedStartDate = `${startDate.toISOString().split('T')[0]}`
+        const formattedStartHour = `${startHour}`;
+        const formattedEndDate = `${endDate.toISOString().split('T')[0]}`;
+        const formattedEndHour = `${endHour}`;
+        
         try {
             const response = await axios.get('api/rank', {
                 params: {
-                    startDate: start,
-                    endDate: end,
+                    startDate: formattedStartDate,
+                    endDate: formattedEndDate,
+                    startHour : formattedStartHour,
+                    endHour : formattedEndHour,
                     calc,
                     title: sortCriteria,
                     page,
@@ -67,7 +72,7 @@ function Ranking() {
                         setShowData(false);
                     }}
                 >
-                    Call Count Ranking
+                    Call Count
                 </button>
                 <button
                     className={`ranking-tab ${sortCriteria === 'memoryUsage' ? 'active' : ''}`}
@@ -77,51 +82,61 @@ function Ranking() {
                         setShowData(false);
                     }}
                 >
-                    Memory Usage Ranking
+                    Memory Usage
                 </button>
             </div>
 
             {/* 공통 DatePicker Section */}
             <div className="date-picker">
-                <label>Start Date:</label>
-                <DatePicker
-                    selected={startDate}
-                    onChange={(date) => setStartDate(date)}
-                    dateFormat="yyyy-MM-dd"
-                    showTimeSelect={false}
-                />
-                <label>Start Hour:</label>
-                <select
-                    value={startHour}
-                    onChange={(e) => setStartHour(e.target.value)}
-                >
-                    {[...Array(24)].map((_, index) => {
-                        const hour = index < 10 ? `0${index}` : index;
-                        return (
-                            <option key={index} value={hour}>{hour}</option>
-                        );
-                    })}
-                </select>
-                <label>End Date:</label>
-                <DatePicker
-                    selected={endDate}
-                    onChange={(date) => setEndDate(date)}
-                    dateFormat="yyyy-MM-dd"
-                    showTimeSelect={false}
-                />
-                <label>End Hour:</label>
-                <select
-                    value={endHour}
-                    onChange={(e) => setEndHour(e.target.value)}
-                >
-                    {[...Array(24)].map((_, index) => {
-                        const hour = index < 10 ? `0${index}` : index;
-                        return (
-                            <option key={index} value={hour}>{hour}</option>
-                        );
-                    })}
-                </select>
-                <button onClick={() => handleSelect(currentPage)}>Select</button>
+                <div className="filter">
+                    <label>Start Date:</label>
+                    <DatePicker
+                        selected={startDate}
+                        onChange={(date) => setStartDate(date)}
+                        dateFormat="yyyy-MM-dd"
+                        showTimeSelect={false}
+                    />
+                </div>
+                <div className="filter">
+                    <label>Start Hour:</label>
+                    <select
+                        value={startHour}
+                        onChange={(e) => setStartHour(e.target.value)}
+                    >
+                        {[...Array(24)].map((_, index) => {
+                            const hour = index < 10 ? `0${index}` : index;
+                            return (
+                                <option key={index} value={hour}>{hour}</option>
+                            );
+                        })}
+                    </select>
+                </div>
+                <div className="filter">
+                    <label>End Date:</label>
+                    <DatePicker
+                        selected={endDate}
+                        onChange={(date) => setEndDate(date)}
+                        dateFormat="yyyy-MM-dd"
+                        showTimeSelect={false}
+                    />
+                </div>
+                <div className="filter">
+                    <label>End Hour:</label>
+                    <select
+                        value={endHour}
+                        onChange={(e) => setEndHour(e.target.value)}
+                    >
+                        {[...Array(24)].map((_, index) => {
+                            const hour = index < 10 ? `0${index}` : index;
+                            return (
+                                <option key={index} value={hour}>{hour}</option>
+                            );
+                        })}
+                    </select>
+                </div>
+                <div className="search-button">
+                    <button className="select-btn" onClick={() => handleSelect(currentPage)}>Search</button>
+                </div>
             </div>
 
             {/* Memory Usage Section 추가 버튼 */}
