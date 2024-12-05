@@ -172,7 +172,7 @@ function Ranking() {
                                 {sortCriteria === 'callCount' ? (
                                     <p>{`${index + 1}. ${item.uri} - call count: ${item.calledNum}`}</p>
                                 ) : (
-                                    <p>{`${index + 1}. ${item.uri} - memory usage: ${calc === 'average' ? item.averageMemoryUsage : item.maxMemoryUsage}MB`}</p>
+                                    <p>{`${index + 1}. ${item.uri} - memory usage: ${calc === 'average' ? item.averageMemoryUsage : item.maxMemoryUsage}B`}</p>
                                 )}
                             </div>
                         ))

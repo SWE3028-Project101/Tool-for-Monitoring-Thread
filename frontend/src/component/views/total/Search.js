@@ -3,7 +3,7 @@ import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './Search.css';
-
+import Pagination from "./Pagination";
 function Search() {
     const [uri, setUri] = useState('');
     const [responseTime, setResponseTime] = useState('');
@@ -12,24 +12,53 @@ function Search() {
     const [selectedHour, setSelectedHour] = useState("00");
     const [results, setResults] = useState([]);
     const [dataCount, setDataCount] = useState(0);
+    const [totalPage, setTotalPage] = useState(0); // 전체 페이지 수 상태 추가
+    const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
+    const itemsPerPage = 10; // 페이지당 항목 수
 
-    const handleSearch = async () => {
+    const handleSearch = async (page = 0) => {
         const date = selectedDate.toISOString().split('T')[0]; // yyyy-mm-dd 형식
+        console.log(page);
         try {
-            const response = await axios.get('/api', {
+            const response = await axios.get('api', {
                 params: {
-                    uri,
-                    responseTime,
+                    search : uri,
+                    executionTime : responseTime,
                     memoryUsage,
                     date,
-                    hour: selectedHour,
+                    time: selectedHour,
+                    page : page
                 },
             });
-            setResults(response.data);
-            setDataCount(response.data.length);
+            if (Object.keys(response.data).length === 0) {
+                console.log('no data');
+                setResults([]);
+                setTotalPage(0); // 데이터가 없을 경우 페이지 수를 0으로 설정
+                setDataCount(0);
+            } else {
+                //console.log('1: ',response.data.data);
+                //console.log('2: ',response.data.data.length);
+                //console.log('totalPage : ',response.data.totalPage);
+               
+                setTotalPage(response.data.totalPage); // 백엔드에서 받은 totalPage 설정
+                setResults(response.data.data);
+                setDataCount(response.data.data.length);
+            }
+
+            
+          
         } catch (error) {
             console.error('Error fetching data:', error);
         }
+    };
+   // console.log('result is ',results);
+    //console.log('result.data', results);
+    const handlePageChange = (selectedPage) => {
+        
+        console.log('page change to : ',selectedPage.selected);
+        
+        setCurrentPage(selectedPage.selected + 1);
+        handleSearch(selectedPage.selected + 1); // 페이지 변경 시 데이터 요청
     };
 
     return (
@@ -93,15 +122,23 @@ function Search() {
             </div>
 
             <div className="results-container">
-                {results.length > 0 ? (
+                {results ? (
                     results.map((item, index) => (
                         <div key={index} className="result-item">
-                            {`${index + 1}. ${item.uri} - memory usage: ${item.memoryUsage}MB, thread time: ${item.threadTime}ms`}
+                            {`${index + 1}. ${item.uri} - Memory Usage: ${item.memoryUsage}B, Execution Time: ${item.executionTime}`}
                         </div>
                     ))
                 ) : (
                     <p>No data available</p>
                 )}
+                {/* 페이지네이션 */}
+                {totalPage > 1 && (
+                        <Pagination
+                            pageCount={totalPage}
+                            onPageChange={handlePageChange}
+                            currentPage={currentPage}
+                        />
+                    )}
                 <div className="data-count">
                     Data number: {dataCount}
                 </div>

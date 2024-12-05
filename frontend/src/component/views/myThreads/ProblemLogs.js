@@ -18,7 +18,7 @@ function ProblemLogs({ logs }) {
           ))}
         </ul>
       ) : (
-        <p>No errors found</p>
+        <ul><li>No errors found</li></ul>
       )}
     </div>
   );
