@@ -65,12 +65,13 @@
 }
 
 .search-button button {
-    padding: 10px 20px;
+    padding: 12px 36px;
     background-color: #007bff;
     color: white;
     border: none;
     border-radius: 8px;
     font-size: 16px;
+    font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
