@@ -8,7 +8,7 @@ const CategorySummary = ({ category, total, largest, slowest, threadCount, activ
     <p>Largest Memory Usage Thread: {Math.round(largest.memoryUsage/1_000_000)} MB</p>
     <p>Slowest Thread: {slowest.executionTime} ms</p>
     <p>Total Threads Count: {threadCount}</p>
-    <p>Idle over Total: {totalCount-activeCount}/{totalCount}</p>
+    <p>Idle over Total: {totalCount-activeCount >= 0 ? totalCount-activeCount : 0}/{totalCount}</p>
   </div>
 );
 

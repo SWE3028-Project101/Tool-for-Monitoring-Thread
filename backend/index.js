@@ -141,7 +141,7 @@ app.get('/api/mainPage', (req, res) => {
 app.get('/api', (req, res) => {
 
         try {
-            const data = fs.readFileSync('data1.json', 'utf-8');
+            const data = fs.readFileSync('data.json', 'utf-8');
             const jsonData = JSON.parse(data); // JSON 문자열을 객체로 변환
             
             const searchString = req.query.search
