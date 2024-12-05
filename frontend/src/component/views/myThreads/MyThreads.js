@@ -43,8 +43,9 @@ function MyThreads({ data }) {
           data.data.map(item => {
             console.log(item);
             if (item.uri != null ) {
-            const category = `/${item.uri.split('/')[1] || ''}`;
-            return category === '/' ? '/' : `/${item.uri.split('/')[1]}`;
+              const baseUri = item.uri.split('/')[1] || '';
+              const category = `/${baseUri}`;
+              return category === '/' ? '/' : category;
             }
           })
         )
@@ -54,8 +55,10 @@ function MyThreads({ data }) {
      
       const groupedData = extractedCategories.reduce((acc, category) => {
         acc[category] = data.data.filter(item => {
-          if(item.uri != null)
-            return category === '/' ? item.uri === '/' : item.uri.startsWith(category);
+          if(item.uri != null) {
+            const itemBaseUri = `/${item.uri.split('/')[1]}`;
+            return category === '/' ? item.uri === '/' : itemBaseUri === category;
+          }
         });
         return acc;
       }, {});
@@ -83,8 +86,9 @@ function MyThreads({ data }) {
         new Set(
           errorData.map(item => {
             if(item.uri != null) {
-            const errorcategory = `/${item.uri.split('/')[1] || ''}`;
-            return errorcategory === '/' ? '/' : `/${item.uri.split('/')[1]}`;
+              const errorbaseUri = item.uri.split('/')[1] || '';
+              const errorcategory = `/${errorbaseUri}`;
+              return errorcategory === '/' ? '/' : errorcategory;
             }
           })
         )
@@ -92,8 +96,10 @@ function MyThreads({ data }) {
 
       const groupedErrorData = extractedErrorCategory.reduce((acc, category) => {
         acc[category] = errorData.filter(item => {
-          if(item.uri != null)
-            return category === '/' ? item.uri === '/' : item.uri.startsWith(category);
+          if(item.uri != null){
+            const erroritemBaseUri = `/${item.uri.split('/')[1]}`;
+            return category === '/' ? item.uri === '/' : erroritemBaseUri === category;
+          }
         });
         return acc;
       }, {});

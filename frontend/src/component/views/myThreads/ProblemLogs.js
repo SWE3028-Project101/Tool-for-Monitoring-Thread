@@ -13,7 +13,7 @@ function ProblemLogs({ logs }) {
         <ul>
           {errorLogs.map((item, index) => (
             <li key={index}>
-              <strong>{index + 1}.</strong> {item.uri} - memory usage: {Math.round(item.memoryUsage/1_000_000)}MB, thread time: {item.executionTime}ms, ({item.time})
+              <strong>{index + 1}.</strong> {item.uri} - memory usage: {Math.round(item.memoryUsage/1_000_000)}MB, thread time: {item.executionTime}, ({item.time})
             </li>
           ))}
         </ul>
